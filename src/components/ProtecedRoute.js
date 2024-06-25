@@ -25,6 +25,7 @@ function ProtecedRoute({ children }) {
       if (response.data.sucess) {
         dispatch(setUser(response.data.user));
         dispatch(hideLoading());
+        console.log("me" + loading, response.data.user);
       } else {
         dispatch(hideLoading());
         navigate("/login");
@@ -40,6 +41,7 @@ function ProtecedRoute({ children }) {
     } else {
       navigate("/login");
     }
+    console.log("me" + loading, user);
   }, []);
 
   return (
