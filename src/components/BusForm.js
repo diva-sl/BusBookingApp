@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Form, message, Modal, Row } from "antd";
 import { useDispatch } from "react-redux";
-import { hideLoading, showLoading } from "../redux/AlertSlice";
+import { hideLoading, showLoading } from "../redux/AlertSlice.js";
 import axios from "axios";
 
 function BusForm({

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/userSlice";
 import Loader from "./Loader";
-import { hideLoading, showLoading } from "../redux/AlertSlice";
+import { hideLoading, showLoading } from "../redux/AlertSlice.js";
 import DefaultLayout from "./DefaultLayout";
 
 function ProtecedRoute({ children }) {

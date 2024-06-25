@@ -4,7 +4,7 @@ import { Box } from "@mui/system";
 import PageTitle from "../../components/PageTitle";
 import BusForm from "../../components/BusForm";
 import axios from "axios";
-import { hideLoading, showLoading } from "../../redux/AlertSlice";
+import { hideLoading, showLoading } from "../../redux/AlertSlice.js";
 import { useDispatch } from "react-redux";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
