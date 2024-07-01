@@ -1,4 +1,3 @@
-const { message } = require("antd");
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
