@@ -1,6 +1,6 @@
 const DataTypes = require("sequelize");
 const sequelize = require("./database");
-const Bus = requir("./busModels");
+const Bus = require("./busModel");
 const User = require("./userModel");
 
 const Booking = sequelize.define(
