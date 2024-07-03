@@ -1,6 +1,6 @@
 import React from "react";
 import "../pages/global.css";
-import { RiLoader5Line } from "react-icons/Ri";
+import { RiLoader5Line } from "react-icons/ri";
 
 function Loader() {
   return (

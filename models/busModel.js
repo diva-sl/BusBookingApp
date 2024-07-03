@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./database");
-const { type } = require("@testing-library/user-event/dist/type");
 
 const Bus = sequelize.define("Bus", {
   name: {

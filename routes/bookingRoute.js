@@ -61,7 +61,7 @@ router.post("/make-payment", authMiddleware, async (req, res) => {
     } else {
       res.status(500).send({
         message: "Payment Failed",
-        data: error,
+        data: null,
         success: false,
       });
     }

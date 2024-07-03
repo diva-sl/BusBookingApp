@@ -1,31 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/userSlice";
 import Loader from "./Loader";
-import { hideLoading, showLoading } from "../redux/AlertSlice.js";
+import { hideLoading, showLoading } from "../redux/AlertSlice";
 import DefaultLayout from "./DefaultLayout";
 
-function ProtecedRoute({ children }) {
+function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.alerts.loading);
   const { user } = useSelector((state) => state.users);
+
   const navigate = useNavigate();
 
   const validateToken = async () => {
+    dispatch(showLoading());
     try {
-      dispatch(showLoading());
-
-      const response = await axios.post(
+      const res = await axios.post(
         "http://localhost:5000/user/getuser",
         {},
-        { header: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
-      if (response.data.sucess) {
-        dispatch(setUser(response.data.user));
+
+      if (res.data.success) {
+        dispatch(setUser(res.data.user));
         dispatch(hideLoading());
-        console.log("me" + loading, response.data.user);
+      } else if (res.status >= 401) {
+        dispatch(hideLoading());
+        navigate("/login");
       } else {
         dispatch(hideLoading());
         navigate("/login");
@@ -35,18 +42,21 @@ function ProtecedRoute({ children }) {
       navigate("/login");
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       validateToken();
     } else {
       navigate("/login");
     }
-    console.log("me" + loading, user);
   }, []);
 
   return (
-    <div>{user !== null && <DefaultLayout>{children}</DefaultLayout>}</div>
+    <div>
+      {loading && <Loader />}
+      {user && !loading ? <DefaultLayout>{children}</DefaultLayout> : null}
+    </div>
   );
 }
 
-export default ProtecedRoute;
+export default ProtectedRoute;

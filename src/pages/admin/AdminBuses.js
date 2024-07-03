@@ -13,8 +13,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { AiFillDelete } from "react-icons-ai";
-import { MdUpdate } from "react-icons-md";
+import { AiFillDelete } from "react-icons/ai";
+import { MdUpdate } from "react-icons/md";
 
 function AdminBuses() {
   const [showBusForm, setShowBusForm] = useState(false);

@@ -73,7 +73,7 @@ function BookNow() {
       );
       dispatch(hideLoading());
       if (response.data.success) {
-        message.success(gresponse.data.message);
+        message.success(response.data.message);
         bookNow(response.data.data.transactionId);
       } else {
         message.error(response.data.message);

@@ -1,10 +1,8 @@
-import axios from "axios";
-import React, { useEffect } from "react";
-import Login from ".pages/Login";
-import Register from ".pages/Register";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PublicRoute from "./component/PublicRoute";
-import ProtecedRoute from "./component/ProtecedRoute";
+import PublicRoute from "./components/PublicRoute";
+import ProtecedRoute from "./components/ProtecedRoute";
 import Home from "./pages/Home";
 import AdminBuses from "./pages/admin/AdminBuses";
 import AdminHome from "./pages/admin/AdminHome";
