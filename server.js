@@ -4,16 +4,24 @@ const userRoute = require("./routes/userRoute.js");
 const busRoute = require("./routes/busRoute.js");
 const bookingRoute = require("./routes/bookingRoute.js");
 require("dotenv").config();
-const dbConnect = require("../config/connect.js");
+const dbConnect = require("./config/connect.js");
+
 const app = express();
 
-app.use(cors());
+// Connect to the database
+dbConnect();
 
-app.use(express.join());
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
 app.use("/user", userRoute);
 app.use("/buses", busRoute);
 app.use("/api/booking", bookingRoute);
 
-app.listen(5000, () => {
-  console.log("in");
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

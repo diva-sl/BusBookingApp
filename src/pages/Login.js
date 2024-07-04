@@ -1,10 +1,9 @@
 import { TextField, Typography, Button } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import "./login.css";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -14,31 +13,42 @@ function Login() {
     password: "",
   });
   const [signUp, setSignUp] = useState(false);
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
+
   const request = async (type) => {
-    const res = await axios
-      .post(`http://localhost:5000/user/${type}`, {
+    try {
+      const res = await axios.post(`http://localhost:5000/user/${type}`, {
         name: inputs.name,
         email: inputs.email,
         password: inputs.password,
-      })
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    if (!signUp && data.success) {
-      localStorage.setItem("token", data.data);
-      navigate("/");
+      });
+      const data = res.data;
+      if (data.success) {
+        if (!signUp) {
+          localStorage.setItem("token", data.data);
+          navigate("/");
+        }
+      } else {
+        console.error("Request failed");
+      }
+      return data;
+    } catch (err) {
+      console.error(err);
     }
   };
+
   const handleChange = (e) => {
     setInputs((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (signUp) {
@@ -47,22 +57,23 @@ function Login() {
       request("login");
     }
   };
+
   return (
     <div className="main3">
       <form onSubmit={handleSubmit}>
         <Box
           display="flex"
-          flexDirection={"column"}
+          flexDirection="column"
           alignItems="center"
           className="Box"
           sx={{ width: { md: "40vw", sm: "80vw" } }}
         >
-          <Typography variant="h2">{signUp ? "SignUp" : "Login"}</Typography>
+          <Typography variant="h2">{signUp ? "Sign Up" : "Login"}</Typography>
           {signUp && (
             <TextField
               className="text"
               value={inputs.name}
-              placeholder="name"
+              placeholder="Name"
               margin="normal"
               name="name"
               onChange={handleChange}
@@ -70,7 +81,7 @@ function Login() {
           )}
           <TextField
             className="text"
-            placeholder="email"
+            placeholder="Email"
             margin="normal"
             value={inputs.email}
             name="email"
@@ -78,23 +89,18 @@ function Login() {
           />
           <TextField
             className="text"
-            placeholder="password"
+            placeholder="Password"
+            type="password"
             value={inputs.password}
             margin="normal"
             name="password"
             onChange={handleChange}
           />
-          {signUp ? (
-            <Button variant="contained" type="submit">
-              signUp
-            </Button>
-          ) : (
-            <Button variant="contained" type="submit">
-              Login
-            </Button>
-          )}
+          <Button variant="contained" type="submit">
+            {signUp ? "Sign Up" : "Login"}
+          </Button>
           <Button onClick={() => setSignUp(!signUp)}>
-            Chaneg to {signUp ? "Login" : "SignUp"}
+            Change to {signUp ? "Login" : "Sign Up"}
           </Button>
         </Box>
       </form>

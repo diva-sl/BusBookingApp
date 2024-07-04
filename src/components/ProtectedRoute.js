@@ -30,9 +30,6 @@ function ProtectedRoute({ children }) {
       if (res.data.success) {
         dispatch(setUser(res.data.user));
         dispatch(hideLoading());
-      } else if (res.status >= 401) {
-        dispatch(hideLoading());
-        navigate("/login");
       } else {
         dispatch(hideLoading());
         navigate("/login");
@@ -52,10 +49,10 @@ function ProtectedRoute({ children }) {
   }, []);
 
   return (
-    <div>
+    <>
       {loading && <Loader />}
       {user && !loading ? <DefaultLayout>{children}</DefaultLayout> : null}
-    </div>
+    </>
   );
 }
 

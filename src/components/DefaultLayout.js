@@ -10,9 +10,11 @@ import { ImCancelCircle } from "react-icons/im";
 function DefaultLayout({ children }) {
   const [menu, setMenu] = useState(false);
   const { user } = useSelector((state) => state.user);
+
   const setMenus = () => {
-    menu ? setMenu(false) : setMenu(true);
+    setMenu((prevMenu) => !prevMenu);
   };
+
   const userMenu = [
     {
       name: "Home",
@@ -35,6 +37,7 @@ function DefaultLayout({ children }) {
       path: "/",
     },
   ];
+
   const adminMenu = [
     {
       name: "Home",
@@ -51,7 +54,6 @@ function DefaultLayout({ children }) {
       icon: <CgProfile size={"30px"} />,
       path: "/admin/users",
     },
-
     {
       name: "Booking",
       icon: <AiTwotoneBook size={"30px"} />,
@@ -63,12 +65,14 @@ function DefaultLayout({ children }) {
       path: "/logout",
     },
   ];
+
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
+
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumn: { md: "20% 80%", sm: "100" },
+        gridTemplateColumns: { md: "20% 80%", sm: "100%" },
         height: "100vh",
       }}
     >
@@ -92,16 +96,17 @@ function DefaultLayout({ children }) {
             <h2>CB</h2>
           </Box>
           <Box>{user?.name}</Box>
-          <Box>Role:{user?.isAdmin ? "Admin" : "User"}</Box>
+          <Box>Role: {user?.isAdmin ? "Admin" : "User"}</Box>
         </Box>
         {menuToBeRendered.map((data) => (
           <Box
+            key={data.name}
             sx={{
               height: "50px",
               color: "white",
               borderBottom: "1px solid white",
               display: "flex",
-              justifyContest: "center",
+              justifyContent: "center",
               alignItems: "center",
             }}
           >
@@ -111,7 +116,7 @@ function DefaultLayout({ children }) {
             >
               <Box sx={{ gap: "15px", display: "flex" }}>
                 {data.icon}
-                <Box>{!menu ? "" : data.name}</Box>
+                <Box>{menu ? data.name : null}</Box>
               </Box>
             </Link>
           </Box>
@@ -127,19 +132,20 @@ function DefaultLayout({ children }) {
             display: "flex",
             alignItems: "center",
             padding: "10px",
-            cursor: "pointor",
+            cursor: "pointer",
           }}
         >
           {menu ? (
-            <ImCancelCircle onClick={() => setMenus()} size={"40px"} />
+            <ImCancelCircle onClick={setMenus} size={"40px"} />
           ) : (
-            <AiOutlineMenu size={"40px"} onClick={() => setMenus()} />
+            <AiOutlineMenu size={"40px"} onClick={setMenus} />
           )}
-          Header
+          <span>Header</span>
         </Box>
         {children}
       </Box>
     </Box>
   );
 }
+
 export default DefaultLayout;
