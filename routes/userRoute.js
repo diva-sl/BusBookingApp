@@ -1,8 +1,8 @@
-const router = require("express0").Router();
+const router = require("express").Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const authMiddleare = require("../middleware/authMiddleware.js");
+const authMiddleware = require("../middlewares/authMiddleware.js");
 
 router.post("/register", async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -78,7 +78,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/getuser", authMiddleare, async (req, res) => {
+router.post("/getuser", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
     res.send({

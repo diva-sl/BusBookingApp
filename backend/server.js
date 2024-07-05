@@ -4,12 +4,12 @@ const userRoute = require("../routes/userRoute.js");
 const busRoute = require("../routes/busRoute.js");
 const bookingRoute = require("../routes/bookingRoute.js");
 require("dotenv").config();
-const dbConnect = require("../config/connect.js");
+const connectDB = require("../config/connect.js");
 
 const app = express();
 
 // Connect to the database
-dbConnect();
+connectDB();
 
 // Middleware
 app.use(cors());

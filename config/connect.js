@@ -1,5 +1,6 @@
 const { Sequelize } = require("sequelize");
-require("dotenv").config(); // Load environment variables from .env file
+const dotenv = require("dotenv");
+dotenv.config({ path: "../.env" });
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -13,13 +14,13 @@ const sequelize = new Sequelize(
   }
 );
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection successful");
-  })
-  .catch((err) => {
-    console.error("Connection failed:", err);
-  });
+const connectDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
 
-module.exports = sequelize;
+module.exports = connectDB;

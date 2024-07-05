@@ -1,11 +1,11 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("./database");
+const sequelize = require("../database");
 
 const User = sequelize.define(
   "User",
   {
     name: {
-      tyep: DataTypes.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     email: {
@@ -22,7 +22,7 @@ const User = sequelize.define(
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
-      dafalutValue: false,
+      defaultValue: false,
     },
   },
   {
