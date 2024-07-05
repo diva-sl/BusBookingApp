@@ -5,7 +5,7 @@ import userReducer from "./userSlice";
 const store = configureStore({
   reducer: {
     alerts: alertReducer,
-    user: userReducer,
+    users: userReducer,
   },
 });
 

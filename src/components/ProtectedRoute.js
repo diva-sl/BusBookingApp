@@ -10,7 +10,7 @@ import DefaultLayout from "./DefaultLayout";
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.alerts.loading);
-  const { user } = useSelector((state) => state.users);
+  const user = useSelector((state) => state.users.user); // Make sure this matches your store
 
   const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ function ProtectedRoute({ children }) {
     } else {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <>
