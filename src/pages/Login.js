@@ -1,22 +1,23 @@
-import { TextField, Typography, Button } from "@mui/material";
-import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import { TextField, Typography, Button } from '@mui/material';
+import { Box } from '@mui/system';
+import LoginIcon from '@mui/icons-material/Login';
+import React, { useEffect, useState } from 'react';
+import "./login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./login.css";
 
 function Login() {
   const navigate = useNavigate();
+
   const [inputs, setInputs] = useState({
-    name: "",
     email: "",
-    password: "",
+    password: ""
   });
   const [signUp, setSignUp] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/");
+    if (localStorage.getItem('token')) {
+      navigate('/');
     }
   }, [navigate]);
 
@@ -25,55 +26,64 @@ function Login() {
       const res = await axios.post(`http://localhost:5000/user/${type}`, {
         name: inputs.name,
         email: inputs.email,
-        password: inputs.password,
+        password: inputs.password
       });
       const data = res.data;
+
       if (data.success) {
-        if (!signUp) {
+        if (type === "login") {
           localStorage.setItem("token", data.data);
           navigate("/");
+        } else if (type === "register") {
+          navigate("/register");
         }
-      } else {
-        console.error("Request failed");
       }
-      return data;
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   };
 
   const handleChange = (e) => {
     setInputs((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     }));
+  };
+
+  const handleClick = () => {
+    setSignUp(!signUp);
+    if (!signUp) {
+      navigate('/register');
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (signUp) {
-      request("register").then((data) => console.log(data));
+      request("register");
     } else {
       request("login");
     }
   };
 
   return (
-    <div className="main3">
+    <div className='main3_div'>
       <form onSubmit={handleSubmit}>
         <Box
           display="flex"
-          flexDirection="column"
+          flexDirection={"column"}
           alignItems="center"
           className="Box"
-          sx={{ width: { md: "40vw", sm: "80vw" } }}
+          sx={{ width: { md: "40vw", sm: '80vw' } }}
         >
-          <Typography variant="h2">{signUp ? "Sign Up" : "Login"}</Typography>
+          <Typography variant='h2'>{signUp ? "SignUp" : "Login"}</Typography>
           {signUp && (
             <TextField
-              className="text"
               value={inputs.name}
-              placeholder="Name"
+              className="text"
+              placeholder='Name'
               margin="normal"
               name="name"
               onChange={handleChange}
@@ -81,7 +91,7 @@ function Login() {
           )}
           <TextField
             className="text"
-            placeholder="Email"
+            placeholder='Email'
             margin="normal"
             value={inputs.email}
             name="email"
@@ -89,18 +99,17 @@ function Login() {
           />
           <TextField
             className="text"
-            placeholder="Password"
-            type="password"
-            value={inputs.password}
+            placeholder='Password'
             margin="normal"
+            value={inputs.password}
             name="password"
             onChange={handleChange}
           />
-          <Button variant="contained" type="submit">
-            {signUp ? "Sign Up" : "Login"}
+          <Button variant="contained" type="submit" endIcon={<LoginIcon/>}>
+            {signUp ? "SignUp" : "Login"}
           </Button>
-          <Button onClick={() => setSignUp(!signUp)}>
-            Change to {signUp ? "Login" : "Sign Up"}
+          <Button onClick={handleClick} color="secondary">
+            Change to {signUp ? "Login" : "SignUp"}
           </Button>
         </Box>
       </form>

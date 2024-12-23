@@ -1,4 +1,4 @@
-.main3{
+.main3_div{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6,7 +6,7 @@
 }
 
 .Box{
-    background-color: rgb(40,120,60);
+    background-color:#2c3e50;
     height: 100%;
     box-shadow: 1px,1px,3px rgb(100,99,99);
     border-radius: 5px;

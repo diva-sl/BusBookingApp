@@ -1,44 +1,29 @@
-const DataTypes = require("sequelize");
-const sequelize = require("../database");
-const Bus = require("./busModel");
-const User = require("./userModel");
+const mongoose = require("mongoose");
 
-const Booking = sequelize.define(
-  "Booking",
+const bookingSchema = new mongoose.Schema(
   {
-    busId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      reference: {
-        model: Bus,
-        key: "id",
-      },
+    bus:{
+      type: mongoose.Schema.ObjectId,
+      ref: "buses",
+      require: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      reference: {
-        model: User,
-        key: "id",
-      },
+    user:{
+      type: mongoose.Schema.ObjectId,
+      ref: "users",
+      require: true,
     },
-    seats: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
+    seats:{
+      type: Array,
+      require: true,
     },
-    transactionId: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    transactionId:{
+      type: String,
+      require: true,
     },
   },
   {
-    timesStamps: true,
+  timestamps: true,
   }
 );
 
-// Bus.hasMany(Booking, { foreignKey: "busId" });
-// User.hasMany(Booking, { foreignKey: "userId" });
-// Booking.belongsTo(Bus, { foreignKey: "busId" });
-// Booking.belongsTo(User, { foreignKey: "userId" });
-
-module.exports = Booking;
+module.exports = mongoose.model("bookings", bookingSchema);

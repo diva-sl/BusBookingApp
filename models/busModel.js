@@ -1,55 +1,54 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../database");
+const mongoose = require("mongoose");
 
-const Bus = sequelize.define("Bus", {
+const busSchema = new mongoose.Schema({
   name: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   number: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   capacity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+    type: Number,
+    required: true,
   },
   from: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   to: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
-  journeyData: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  journeyDate: {
+    type: String,
+    required: true,
   },
-  depature: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  departure: {
+    type: String,
+    required: true,
   },
   arrival: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   type: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   fare: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+    type: Number,
+    required: true,
   },
   seatsBooked: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
-    defaultValue: [],
+    type: Array,
+    default: [],
   },
   status: {
-    type: DataTypes.STRING,
-    defaultValue: "Yet To Start",
+    type: String,
+    default: "Yet To Start",
   },
 });
 
-module.exports = Bus;
+module.exports = mongoose.model("buses", busSchema);
