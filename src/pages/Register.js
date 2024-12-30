@@ -1,7 +1,7 @@
 import { TextField, Typography, Button } from '@mui/material';
 import { Box } from '@mui/system';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import React, { useEffect, useState } from 'react';
-import LoginIcon from '@mui/icons-material/Login';
 import "./login.css";
 import "./global.css";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +79,7 @@ function Register() {
           className="Box"
           sx={{ width: { md: "40vw", sm: '80vw' } }}
         >
-          <Typography variant='h2'>{signUp ? "SignUp" : "Login"}</Typography>
+          <Typography variant='h2'>{signUp ? "Register" : "Login"}</Typography>
           {signUp && (
             <TextField
               value={inputs.name}
@@ -107,8 +107,8 @@ function Register() {
             type="password"
             onChange={handleChange}
           />
-          <Button variant="contained" type="submit" endIcon={<LoginIcon/>}>
-            {signUp ? "SignUp" : "Login"}
+          <Button variant="contained" type="submit" endIcon={<VpnKeyIcon/>}> 
+            {signUp ? "Sign Up" : "Login"}
           </Button>
           <Button onClick={handleToggleMode}>
             Change to {signUp ? "Login" : "SignUp"}

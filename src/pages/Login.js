@@ -8,7 +8,6 @@ import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
-
   const [inputs, setInputs] = useState({
     email: "",
     password: ""
@@ -23,22 +22,24 @@ function Login() {
 
   const request = async (type) => {
     try {
-      const res = await axios.post(`http://localhost:5000/user/${type}`, {
+      const res = await axios.post(`http://localhost:5000/users/${type}`, {
         name: inputs.name,
         email: inputs.email,
         password: inputs.password
       });
-      const data = res.data;
 
-      if (data.success) {
+      if (res.data.success) {
         if (type === "login") {
-          localStorage.setItem("token", data.data);
+          localStorage.setItem("token", res.data.data);
           navigate("/");
-        } else if (type === "register") {
+        }
+        else if (type === "register") {
           navigate("/register");
         }
+
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.log(err);
     }
   };
@@ -105,7 +106,7 @@ function Login() {
             name="password"
             onChange={handleChange}
           />
-          <Button variant="contained" type="submit" endIcon={<LoginIcon/>}>
+          <Button variant="contained" type="submit" endIcon={<LoginIcon />}>
             {signUp ? "SignUp" : "Login"}
           </Button>
           <Button onClick={handleClick} color="secondary">

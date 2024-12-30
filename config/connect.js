@@ -1,10 +1,9 @@
-require("dotenv").config(); // Load environment variables
 const mongoose = require("mongoose");
 
-// Log the environment variable to debug
-console.log("Mongo URL:", process.env.mongo_url);
 mongoose.connect(process.env.mongo_url)
+
 const db = mongoose.connection;
+
 db.on("connected", () => {
   console.log("Mongo Db Connection succesfull")
 })
@@ -37,4 +36,3 @@ db.on("error", () => {
 //   }
 // };
 
-// module.exports = connectDB;

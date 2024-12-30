@@ -68,7 +68,7 @@ function AdminBuses() {
           padding: "10px",
         }}
       >
-        <PageTitle title="Buses" />
+        {/* <PageTitle title="Buses" /> */}
         <Button
           variant="contained"
           sx={{ background: "green" }}

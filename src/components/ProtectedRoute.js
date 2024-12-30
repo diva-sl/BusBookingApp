@@ -10,15 +10,14 @@ import DefaultLayout from "./DefaultLayout";
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.alerts.loading);
-  const user = useSelector((state) => state.users.user); // Make sure this matches your store
-
+  const {user} = useSelector((state) => state.users);
   const navigate = useNavigate();
 
   const validateToken = async () => {
     dispatch(showLoading());
     try {
       const res = await axios.post(
-        "http://localhost:5000/user/getuser",
+        "http://localhost:5000/users/getuser",
         {},
         {
           headers: {
@@ -26,7 +25,6 @@ function ProtectedRoute({ children }) {
           },
         }
       );
-
       if (res.data.success) {
         dispatch(setUser(res.data.user));
         dispatch(hideLoading());
@@ -37,7 +35,7 @@ function ProtectedRoute({ children }) {
     } catch (error) {
       dispatch(hideLoading());
       navigate("/login");
-    }
+    } 
   };
 
   useEffect(() => {

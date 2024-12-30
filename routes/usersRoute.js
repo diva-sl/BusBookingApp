@@ -37,9 +37,11 @@ router.post("/register", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
-  let existingUser;
+
   try {
-    existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
+  
+
     if (!existingUser) {
       return res.send({
         message: "User Not Found",
@@ -53,20 +55,20 @@ router.post("/login", async (req, res, next) => {
     );
     if (!isCorrectPassword) {
       return res.send({
-        message: "User Not Found",
+        message: "Password Incorrect",
         success: false,
         data: null,
       });
     }
     const token = jwt.sign({
-      id: existingUser._id,
-      token: {
-        expiresIn: "id",
+      userId: existingUser._id},
+      process.env.jwt_secret, {
+        expiresIn: "1d",
       },
-    });
+    );
     res.send({
       message: "User Logged In Successfully",
-      seccess: true,
+      success: true,
       data: token,
     });
   } catch (error) {
@@ -79,11 +81,13 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/getuser", authMiddleware, async (req, res) => {
+
   try {
     const user = await User.findById(req.body.userId);
+    console.log(user);
     res.send({
       message: "User Fetched Successfully",
-      data: user,
+      user: user,
       success: true,
     });
   } catch (error) {

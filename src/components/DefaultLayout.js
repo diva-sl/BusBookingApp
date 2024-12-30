@@ -1,69 +1,47 @@
-import { Box } from "@mui/system";
 import React, { useState } from "react";
+import { Box } from "@mui/system";
 import { useSelector } from "react-redux";
-import { AiFillHome, AiTwotoneBook, AiOutlineMenu } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
-import { BiBus, BiLogOut } from "react-icons/bi";
-import { Link } from "react-router-dom";
-import { ImCancelCircle } from "react-icons/im";
+import {
+  Home as HomeIcon,
+  Book as BookIcon,
+  AccountBox as AccountBoxIcon,
+  Logout as LogoutIcon,
+  DirectionsBus as DirectionsBusIcon,
+  Close as CloseIcon,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
 
 function DefaultLayout({ children }) {
   const [menu, setMenu] = useState(false);
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.users);
+  const navigate = useNavigate();
 
-  const setMenus = () => {
-    setMenu((prevMenu) => !prevMenu);
+  const toggleMenu = () => setMenu((prevMenu) => !prevMenu);
+
+  const handleLogout = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      localStorage.removeItem("token");
+      navigate("/login"); 
+    } else {
+      alert("You are not logged in!");
+    }
   };
 
   const userMenu = [
-    {
-      name: "Home",
-      icon: <AiFillHome size={"30px"} />,
-      path: "/",
-    },
-    {
-      name: "Booking",
-      icon: <AiTwotoneBook size={"30px"} />,
-      path: "/",
-    },
-    {
-      name: "Profile",
-      icon: <CgProfile size={"30px"} />,
-      path: "/",
-    },
-    {
-      name: "Logout",
-      icon: <BiLogOut size={"30px"} />,
-      path: "/",
-    },
+    { name: "Home", icon: <HomeIcon />, path: "/" },
+    { name: "Booking", icon: <BookIcon />, path: "/" },
+    { name: "Profile", icon: <AccountBoxIcon />, path: "/" },
+    { name: "Logout", icon: <LogoutIcon />, action: handleLogout },
   ];
 
   const adminMenu = [
-    {
-      name: "Home",
-      icon: <AiFillHome size={"30px"} />,
-      path: "/",
-    },
-    {
-      name: "Buses",
-      icon: <BiBus size={"30px"} />,
-      path: "/admin/buses",
-    },
-    {
-      name: "Users",
-      icon: <CgProfile size={"30px"} />,
-      path: "/admin/users",
-    },
-    {
-      name: "Booking",
-      icon: <AiTwotoneBook size={"30px"} />,
-      path: "/admin/booking",
-    },
-    {
-      name: "Logout",
-      icon: <BiLogOut size={"30px"} />,
-      path: "/logout",
-    },
+    { name: "Home", icon: <HomeIcon />, path: "/" },
+    { name: "Buses", icon: <DirectionsBusIcon />, path: "/admin/buses" },
+    { name: "Users", icon: <AccountBoxIcon />, path: "/admin/users" },
+    { name: "Booking", icon: <BookIcon />, path: "/admin/booking" },
+    { name: "Logout", icon: <LogoutIcon />, action: handleLogout },
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
@@ -72,13 +50,14 @@ function DefaultLayout({ children }) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: { md: "20% 80%", sm: "100%" },
+        gridTemplateColumns: { md: menu ? "280px auto" : "200px auto", xs: "100%" },
         height: "100vh",
+        transition: "grid-template-columns 0.3s ease",
       }}
     >
       <Box
         sx={{
-          background: "red",
+          background: "linear-gradient(to bottom, rgba(65, 105, 225, 0.84), rgba(72, 118, 255, 0.92), rgba(70, 130, 255, 1))",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -87,60 +66,116 @@ function DefaultLayout({ children }) {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "center",
             flexDirection: "column",
-            alignItems: "center",
+            alignItems: "flex-start",
+            gap: "15px",
+            padding: "20px",
+            color: "#black",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "16px",
           }}
         >
-          <Box>
-            <h2>CB</h2>
-          </Box>
-          <Box>{user?.name}</Box>
-          <Box>Role: {user?.isAdmin ? "Admin" : "User"}</Box>
-        </Box>
-        {menuToBeRendered.map((data) => (
+          <h2 style={{ margin: 0, fontSize: "24px" }}>VOUGHT BUS</h2>
           <Box
-            key={data.name}
             sx={{
-              height: "50px",
-              color: "white",
-              borderBottom: "1px solid white",
-              display: "flex",
-              justifyContent: "center",
+              display: "grid",
+              gridTemplateColumns: "max-content auto",
+              columnGap: "10px",
+              rowGap: "10px",
               alignItems: "center",
             }}
           >
-            <Link
-              to={data.path}
-              style={{ textDecoration: "none", color: "white" }}
-            >
-              <Box sx={{ gap: "15px", display: "flex" }}>
-                {data.icon}
-                <Box>{menu ? data.name : null}</Box>
+            <Box sx={{ fontWeight: "bold" }}>Name<span style={{ marginLeft: "5px" }}>:</span></Box>
+            <Box>{user?.name || "Guest"}</Box>
+            <Box sx={{ fontWeight: "bold" }}>Role<span style={{ marginLeft: "15px" }}>:</span></Box>
+            <Box>{user?.isAdmin ? "Admin" : "Guest"}</Box>
+          </Box>
+        </Box>
+        {menuToBeRendered.map((item) => (
+          <Box
+            key={item.name}
+            sx={{
+              height: "50px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "15px",
+              padding: "10px 15px",
+              color: "white",
+              borderBottom: "1px solid white",
+            }}
+            onClick={item.action || null}
+          >
+            {item.path ? (
+              <Link to={item.path} style={{ textDecoration: "none", color: "white" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "start",
+                    gap: "15px",
+                    fontSize: "18px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "start",
+                      width: "30px",
+                      height: "30px",
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  {menu && (<Box sx={{ display: "flex", alignItems: "start", fontWeight: "400" }}>{item.name}</Box>)}
+                </Box>
+              </Link>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "start",
+                  gap: "15px",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "start",
+                    width: "30px",
+                    height: "30px",
+                  }}
+                >
+                  {item.icon}
+                </Box>
+                {menu && (<Box sx={{ display: "flex", alignItems: "start", fontWeight: "400" }}>{item.name}</Box>)}
               </Box>
-            </Link>
+            )}
           </Box>
         ))}
       </Box>
       <Box sx={{ padding: "1vw" }}>
         <Box
           sx={{
-            width: "100px",
-            height: "13%",
-            border: "1px solid black",
-            boxShadow: "1px 1px 5px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
+            width: "90%",
+            height: "50px",
+            border: "0.5px solid black",
+            boxShadow: "1px 1px 1px",
             padding: "10px",
             cursor: "pointer",
           }}
         >
           {menu ? (
-            <ImCancelCircle onClick={setMenus} size={"40px"} />
+            <CloseIcon sx={{ fontSize: "30px" }} onClick={toggleMenu} />
           ) : (
-            <AiOutlineMenu size={"40px"} onClick={setMenus} />
+            <MenuIcon sx={{ fontSize: "30px" }} onClick={toggleMenu} />
           )}
-          <span>Header</span>
         </Box>
         {children}
       </Box>
