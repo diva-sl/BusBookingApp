@@ -23,7 +23,7 @@ function DefaultLayout({ children }) {
     const token = localStorage.getItem("token");
     if (token) {
       localStorage.removeItem("token");
-      navigate("/login"); 
+      navigate("/login");
     } else {
       alert("You are not logged in!");
     }
@@ -50,14 +50,18 @@ function DefaultLayout({ children }) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: { md: menu ? "280px auto" : "200px auto", xs: "100%" },
+        gridTemplateColumns: {
+          md: menu ? "280px auto" : "200px auto",
+          xs: "100%",
+        },
         height: "100vh",
         transition: "grid-template-columns 0.3s ease",
       }}
     >
       <Box
         sx={{
-          background: "linear-gradient(to bottom, rgba(65, 105, 225, 0.84), rgba(72, 118, 255, 0.92), rgba(70, 130, 255, 1))",
+          background:
+            "linear-gradient(to bottom, rgba(65, 105, 225, 0.84), rgba(72, 118, 255, 0.92), rgba(70, 130, 255, 1))",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -85,9 +89,13 @@ function DefaultLayout({ children }) {
               alignItems: "center",
             }}
           >
-            <Box sx={{ fontWeight: "bold" }}>Name<span style={{ marginLeft: "5px" }}>:</span></Box>
+            <Box sx={{ fontWeight: "bold" }}>
+              Name<span style={{ marginLeft: "5px" }}>:</span>
+            </Box>
             <Box>{user?.name || "Guest"}</Box>
-            <Box sx={{ fontWeight: "bold" }}>Role<span style={{ marginLeft: "15px" }}>:</span></Box>
+            <Box sx={{ fontWeight: "bold" }}>
+              Role<span style={{ marginLeft: "15px" }}>:</span>
+            </Box>
             <Box>{user?.isAdmin ? "Admin" : "Guest"}</Box>
           </Box>
         </Box>
@@ -107,7 +115,10 @@ function DefaultLayout({ children }) {
             onClick={item.action || null}
           >
             {item.path ? (
-              <Link to={item.path} style={{ textDecoration: "none", color: "white" }}>
+              <Link
+                to={item.path}
+                style={{ textDecoration: "none", color: "white" }}
+              >
                 <Box
                   sx={{
                     display: "flex",
@@ -127,7 +138,17 @@ function DefaultLayout({ children }) {
                   >
                     {item.icon}
                   </Box>
-                  {menu && (<Box sx={{ display: "flex", alignItems: "start", fontWeight: "400" }}>{item.name}</Box>)}
+                  {menu && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "start",
+                        fontWeight: "400",
+                      }}
+                    >
+                      {item.name}
+                    </Box>
+                  )}
                 </Box>
               </Link>
             ) : (
@@ -151,7 +172,17 @@ function DefaultLayout({ children }) {
                 >
                   {item.icon}
                 </Box>
-                {menu && (<Box sx={{ display: "flex", alignItems: "start", fontWeight: "400" }}>{item.name}</Box>)}
+                {menu && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "start",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {item.name}
+                  </Box>
+                )}
               </Box>
             )}
           </Box>
