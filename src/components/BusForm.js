@@ -1,7 +1,8 @@
 import React from "react";
-import { Col, Form, message, Modal, Row } from "antd";
+import { Col, Form, message, Modal, Row, Select } from "antd";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice.js";
+// import dayjs from "dayjs";
 import axios from "axios";
 
 function BusForm({
@@ -13,6 +14,7 @@ function BusForm({
   setSelectedBuses,
 }) {
   const dispatch = useDispatch();
+
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
@@ -22,7 +24,7 @@ function BusForm({
           "http://localhost:5000/buses/add-bus",
           values,
           {
-            header: {
+            headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
@@ -46,7 +48,7 @@ function BusForm({
     <Modal
       width={800}
       title={type === "add" ? "Add Bus" : "Update Bus"}
-      visible={showBusForm}
+      open={showBusForm}
       onCancel={() => {
         setShowBusForm(false);
       }}
@@ -144,7 +146,7 @@ function BusForm({
           <Col lg={8} xs={24}>
             <Form.Item label="Departure" name="departure">
               <input
-                type="text"
+                type="type"
                 style={{
                   width: "100%",
                   height: "35px",
@@ -169,14 +171,13 @@ function BusForm({
           </Col>
           <Col lg={12} xs={24}>
             <Form.Item label="Type" name="type">
-              <select
-                name=""
-                id=""
+              <Select
+                placeholder="Select Type"
                 style={{ width: "100%", height: "35px", background: "white" }}
               >
-                <option value="AC">AC</option>
-                <option value="Non-AC">Non-AC</option>
-              </select>
+                <Select.Option value="AC">AC</Select.Option>
+                <Select.Option value="Non-AC">Non-AC</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
           <Col lg={12} xs={24}>

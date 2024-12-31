@@ -10,7 +10,7 @@ import DefaultLayout from "./DefaultLayout";
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.alerts.loading);
-  const {user} = useSelector((state) => state.users);
+  const { user } = useSelector((state) => state.users);
   const navigate = useNavigate();
 
   const validateToken = async () => {
@@ -35,7 +35,7 @@ function ProtectedRoute({ children }) {
     } catch (error) {
       dispatch(hideLoading());
       navigate("/login");
-    } 
+    }
   };
 
   useEffect(() => {

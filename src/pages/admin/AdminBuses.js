@@ -19,19 +19,21 @@ import { MdUpdate } from "react-icons/md";
 function AdminBuses() {
   const [showBusForm, setShowBusForm] = useState(false);
   const [selectedBus, setSelectedBus] = useState();
-  const [buses, setBuses] = useState();
+  const [buses, setBuses] = useState([]);
   const [v, sv] = useState([]);
   const [state, setState] = useState(false);
   const [id, setId] = useState();
 
   const dispatch = useDispatch();
-  const getAll = async () => {
+  const getBuses = async () => {
     try {
       dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/buses/get-all-buses",
         {},
-        { header: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       if (response.data.sucess) {
         sv(response.data.data);
@@ -47,7 +49,9 @@ function AdminBuses() {
       const response = await axios.post(
         "http://localhost:5000/buses/delete-bus",
         { _id: id },
-        { header: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       if (response.data.sucess) {
         Window.location.reload();
@@ -56,9 +60,9 @@ function AdminBuses() {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getAll();
-  }, []);
+  // useEffect(() => {
+  //   getBuses();
+  // }, []);
   return (
     <>
       <Box
@@ -68,7 +72,7 @@ function AdminBuses() {
           padding: "10px",
         }}
       >
-        {/* <PageTitle title="Buses" /> */}
+        <PageTitle title="Buses" />
         <Button
           variant="contained"
           sx={{ background: "green" }}

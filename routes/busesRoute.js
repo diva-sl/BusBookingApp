@@ -27,26 +27,25 @@ router.post("/get-all-buses", authMiddleware, async (req, res) => {
 // add-bus
 router.post("/add-bus", authMiddleware, async (req, res) => {
   try {
-    const exitingBus = await Bus.findOne({ number: req.body.number });
-    if (exitingBus) {
-      return res
-        .status(200)
-        .send({ success: false, message: "Bus Already Exists" });
+    const existingBus = await Bus.findOne({ number: req.body.number });
+    if (existingBus) {
+      return res.status(200).send({
+        success: false,
+        message: "Bus already exists",
+      });
     }
     const newBus = new Bus(req.body);
+    console.log(newBus, req.body);
     await newBus.save();
     res.status(200).send({
       success: true,
-      message: "Bus Added Successful",
+      message: "Bus added successfully",
     });
   } catch (error) {
-    res.status(500).send({
-      success: false,
-      message: error.message,
-    });
+    console.error("Error adding bus:", error);
+    res.status(500).send({ success: false, message: error.message });
   }
 });
-
 // update-bus
 router.post("/update-bus", authMiddleware, async (req, res) => {
   try {
@@ -73,8 +72,25 @@ router.post("/delete-bus", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      message: error.message,
       success: false,
+      message: error.message,
+    });
+  }
+});
+// get-bus-by-id
+
+router.post("/get-bus-by-id", authMiddleware, async (req, res) => {
+  try {
+    const bus = await Bus.findById(req.body._id);
+    return res.status(200).send({
+      success: true,
+      message: "Bus fetched successfully",
+      data: bus,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: error.message,
     });
   }
 });

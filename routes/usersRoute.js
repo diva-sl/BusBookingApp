@@ -40,7 +40,6 @@ router.post("/login", async (req, res, next) => {
 
   try {
     const existingUser = await User.findOne({ email });
-  
 
     if (!existingUser) {
       return res.send({
@@ -60,11 +59,14 @@ router.post("/login", async (req, res, next) => {
         data: null,
       });
     }
-    const token = jwt.sign({
-      userId: existingUser._id},
-      process.env.jwt_secret, {
-        expiresIn: "1d",
+    const token = jwt.sign(
+      {
+        userId: existingUser._id,
       },
+      process.env.jwt_secret,
+      {
+        expiresIn: "1d",
+      }
     );
     res.send({
       message: "User Logged In Successfully",
@@ -81,10 +83,8 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/getuser", authMiddleware, async (req, res) => {
-
   try {
     const user = await User.findById(req.body.userId);
-    console.log(user);
     res.send({
       message: "User Fetched Successfully",
       user: user,
