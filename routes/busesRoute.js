@@ -35,14 +35,12 @@ router.post("/add-bus", authMiddleware, async (req, res) => {
       });
     }
     const newBus = new Bus(req.body);
-    console.log(newBus, req.body);
     await newBus.save();
     res.status(200).send({
       success: true,
       message: "Bus added successfully",
     });
   } catch (error) {
-    console.error("Error adding bus:", error);
     res.status(500).send({ success: false, message: error.message });
   }
 });
@@ -77,6 +75,7 @@ router.post("/delete-bus", authMiddleware, async (req, res) => {
     });
   }
 });
+
 // get-bus-by-id
 
 router.post("/get-bus-by-id", authMiddleware, async (req, res) => {

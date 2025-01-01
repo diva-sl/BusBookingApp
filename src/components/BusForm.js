@@ -1,47 +1,44 @@
 import React from "react";
 import { Col, Form, message, Modal, Row, Select } from "antd";
+import Button from "@mui/material/Button";
 import { useDispatch } from "react-redux";
-import { hideLoading, showLoading } from "../redux/AlertSlice.js";
-// import dayjs from "dayjs";
+import { showLoading, hideLoading } from "../redux/AlertSlice";
 import axios from "axios";
 
 function BusForm({
   showBusForm,
   setShowBusForm,
   type,
-  getDate,
-  selectedBuses,
-  setSelectedBuses,
+  selectedBus,
+  refreshBuses,
 }) {
   const dispatch = useDispatch();
 
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
-      let response = null;
-      if (type) {
-        response = await axios.post(
-          "http://localhost:5000/buses/add-bus",
-          values,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-      }
+      const url =
+        type === "add"
+          ? "http://localhost:5000/buses/add-bus"
+          : "http://localhost:5000/buses/update-bus";
+      const payload =
+        type === "add" ? values : { ...values, _id: selectedBus._id };
+
+      const response = await axios.post(url, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      dispatch(hideLoading());
       if (response.data.success) {
+        refreshBuses();
         message.success(response.data.message);
-        dispatch(hideLoading());
-        window.location.reload();
+        setShowBusForm(false);
       } else {
         message.error(response.data.message);
       }
-
-      dispatch(hideLoading());
     } catch (error) {
-      message.error(error.message);
-      dispatch(hideLoading);
+      dispatch(hideLoading());
+      message.error(error);
     }
   };
   return (
@@ -58,6 +55,7 @@ function BusForm({
       <Form
         layout="vertical"
         onFinish={onFinish}
+        initialValues={selectedBus || {}}
         style={{
           padding: "10px",
           background: "rgb(131,34,54,0,1)",
@@ -65,12 +63,12 @@ function BusForm({
         }}
       >
         <Row gutter={[10, 10]}>
-          <Col lg={24} xs={24}>
+          <Col lg={12} xs={24}>
             <Form.Item label="Bus Name" name="name">
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "90%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -78,12 +76,12 @@ function BusForm({
               />
             </Form.Item>
           </Col>
-          <Col lg={24} xs={24}>
+          <Col lg={12} xs={24}>
             <Form.Item label="Bus Number" name="number">
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "90%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -91,25 +89,13 @@ function BusForm({
               />
             </Form.Item>
           </Col>
-          <Col lg={24} xs={24}>
-            <Form.Item label="Capacity" name="capacity">
-              <input
-                type="text"
-                style={{
-                  width: "100%",
-                  height: "35px",
-                  background: "white",
-                  borderRadius: "5px",
-                }}
-              />
-            </Form.Item>
-          </Col>
-          <Col lg={24} xs={24}>
+
+          <Col lg={12} xs={24}>
             <Form.Item label="From" name="from">
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "90%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -117,12 +103,12 @@ function BusForm({
               />
             </Form.Item>
           </Col>
-          <Col lg={24} xs={24}>
+          <Col lg={12} xs={24}>
             <Form.Item label="To" name="to">
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "90%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -135,7 +121,7 @@ function BusForm({
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "95%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -148,7 +134,7 @@ function BusForm({
               <input
                 type="type"
                 style={{
-                  width: "100%",
+                  width: "95%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -161,7 +147,7 @@ function BusForm({
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "95%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -173,7 +159,13 @@ function BusForm({
             <Form.Item label="Type" name="type">
               <Select
                 placeholder="Select Type"
-                style={{ width: "100%", height: "35px", background: "white" }}
+                style={{
+                  width: "90%",
+                  height: "41px",
+                  background: "white",
+                  border: "1.5px solid black",
+                  borderRadius: "5px",
+                }}
               >
                 <Select.Option value="AC">AC</Select.Option>
                 <Select.Option value="Non-AC">Non-AC</Select.Option>
@@ -185,7 +177,20 @@ function BusForm({
               <input
                 type="text"
                 style={{
-                  width: "100%",
+                  width: "90%",
+                  height: "35px",
+                  background: "white",
+                  borderRadius: "5px",
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col lg={12} xs={24}>
+            <Form.Item label="Capacity" name="capacity">
+              <input
+                type="text"
+                style={{
+                  width: "90%",
                   height: "35px",
                   background: "white",
                   borderRadius: "5px",
@@ -195,22 +200,43 @@ function BusForm({
           </Col>
           <Col lg={12} xs={24}>
             <Form.Item label="Status" name="status">
-              <select
+              <Select
                 name=""
-                id=""
-                style={{ width: "100%", height: "35px", background: "white" }}
+                placeholder="Select Status"
+                style={{
+                  width: "90%",
+                  height: "41px",
+                  background: "white",
+                  border: "1.5px solid black",
+                  borderRadius: "5px",
+                }}
               >
-                <option value="Yet To Start">Yet To Start</option>
-                <option value="Running">Running</option>
-                <option value="Completed">Completed</option>
-              </select>
+                <Select.Option value="Yet To Start">Yet To Start</Select.Option>
+                <Select.Option value="Running">Running</Select.Option>
+                <Select.Option value="Completed">Completed</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
         </Row>
-        <div className="d-flex justify-content-end">
-          <button className="primary-btn" type="submit">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "20px",
+          }}
+        >
+          <Button
+            variant="contained"
+            sx={{
+              background: "royalblue",
+              textTransform: "none",
+              padding: "8px 20px",
+              color: "white",
+            }}
+            type="submit"
+          >
             Save
-          </button>
+          </Button>
         </div>
       </Form>
     </Modal>

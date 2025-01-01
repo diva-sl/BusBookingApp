@@ -4,8 +4,8 @@ import { Box } from "@mui/system";
 import PageTitle from "../../components/PageTitle";
 import BusForm from "../../components/BusForm";
 import axios from "axios";
-import { hideLoading, showLoading } from "../../redux/AlertSlice.js";
 import { useDispatch } from "react-redux";
+import { showLoading, hideLoading } from "../../redux/AlertSlice";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,21 +13,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { AiFillDelete } from "react-icons/ai";
-import { MdUpdate } from "react-icons/md";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 function AdminBuses() {
   const [showBusForm, setShowBusForm] = useState(false);
-  const [selectedBus, setSelectedBus] = useState();
+  const [selectedBus, setSelectedBus] = useState(null);
   const [buses, setBuses] = useState([]);
-  const [v, sv] = useState([]);
-  const [state, setState] = useState(false);
-  const [id, setId] = useState();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busToDelete, setBusToDelete] = useState(null);
 
   const dispatch = useDispatch();
   const getBuses = async () => {
     try {
-      dispatch(showLoading());
+      // dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/buses/get-all-buses",
         {},
@@ -35,34 +34,46 @@ function AdminBuses() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      if (response.data.sucess) {
-        sv(response.data.data);
-        dispatch(hideLoading);
+      // dispatch(hideLoading());
+      if (response.data.success) {
+        setBuses(response.data.data);
+      } else {
+        console.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      // dispatch(hideLoading());
     }
   };
+
   const deleteBus = async () => {
     try {
-      dispatch(showLoading());
+      // dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/buses/delete-bus",
-        { _id: id },
+        { _id: busToDelete },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      if (response.data.sucess) {
-        Window.location.reload();
+      // dispatch(hideLoading());
+      if (response.data.success) {
+        setBuses(buses.filter((bus) => bus._id !== busToDelete));
+        setConfirmDelete(false);
+        setBusToDelete(null);
+      } else {
+        console.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      // dispatch(hideLoading());
     }
   };
-  // useEffect(() => {
-  //   getBuses();
-  // }, []);
+
+  useEffect(() => {
+    getBuses();
+  }, []);
+
   return (
     <>
       <Box
@@ -75,107 +86,100 @@ function AdminBuses() {
         <PageTitle title="Buses" />
         <Button
           variant="contained"
-          sx={{ background: "green" }}
+          sx={{ background: "royalblue" }}
           onClick={() => {
             setShowBusForm(true);
-            setBuses(true);
+            setSelectedBus(null);
           }}
         >
           Add Bus
         </Button>
       </Box>
+
       <BusForm
         showBusForm={showBusForm}
         setShowBusForm={setShowBusForm}
-        type={buses}
+        type={selectedBus ? "edit" : "add"}
         selectedBus={selectedBus}
+        refreshBuses={getBuses}
       />
       <Box>
         <TableContainer component={Paper}>
-          <Table sx={{ minwidth: 650 }} size="small" aria-label="a dense table">
+          <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
             <TableHead>
               <TableRow sx={{ background: "rgb(101,101,101,.2)" }}>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Bus Name
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   From
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   To
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Departure
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Arrival
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Date
                 </TableCell>
-                <TableCell
-                  sx={{ p: "15px", fontSize: "16px", fontWeight: "bold" }}
-                  align="center"
-                >
-                  Operation
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                  Actions
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {v.map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row" align="center">
-                    {row.name}
-                  </TableCell>
-                  <TableCell align="center">{row.from}</TableCell>
-                  <TableCell align="center">{row.to}</TableCell>
-                  <TableCell align="center">{row.departure}</TableCell>
-                  <TableCell align="center">{row.arrival}</TableCell>
-                  <TableCell align="center">{row.journeyDate}</TableCell>
-                  <TableCell align="center">
-                    <MdUpdate
-                      size="30px"
-                      onClick={() => {
-                        setShowBusForm(true);
-                        setBuses(false);
-                        setSelectedBus(row);
-                      }}
-                    />
-                    <AiFillDelete
-                      size="30px"
-                      onClick={() => {
-                        setState(true);
-                        setId(row._id);
-                      }}
-                    />
+              {buses.length > 0 ? (
+                buses.map((bus) => (
+                  <TableRow key={bus._id}>
+                    <TableCell align="center">{bus.name}</TableCell>
+                    <TableCell align="center">{bus.from}</TableCell>
+                    <TableCell align="center">{bus.to}</TableCell>
+                    <TableCell align="center">{bus.departure}</TableCell>
+                    <TableCell align="center">{bus.arrival}</TableCell>
+                    <TableCell align="center">{bus.journeyDate}</TableCell>
+                    <TableCell align="center">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <EditIcon
+                          onClick={() => {
+                            setShowBusForm(true);
+                            setSelectedBus(bus);
+                          }}
+                          sx={{ cursor: "pointer", color: "#6c757d" }}
+                        />
+                        <DeleteIcon
+                          onClick={() => {
+                            setConfirmDelete(true);
+                            setBusToDelete(bus._id);
+                          }}
+                          sx={{ cursor: "pointer", color: "#c82333" }}
+                        />
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    No buses available
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-        {state ? (
+
+        {confirmDelete && (
           <Box
             sx={{
               position: "absolute",
@@ -183,34 +187,32 @@ function AdminBuses() {
               left: "40%",
               width: { md: "40vw", xs: "60vw" },
               background: "white",
-              display: "flex",
-              flexDirection: "column",
-              p: "30px",
+              padding: "30px",
               zIndex: 3,
               textAlign: "center",
               boxShadow: "1px 1px 5px red",
             }}
           >
-            <h5>Are you sure want to delete</h5>
-            <Button variant="outline" sx={{ color: "red" }} onClick={deleteBus}>
-              Delete Bus
+            <h5>Are you sure you want to delete this bus?</h5>
+            <Button
+              variant="contained"
+              sx={{ background: "red", color: "white", marginRight: "10px" }}
+              onClick={deleteBus}
+            >
+              Delete
             </Button>
             <Button
-              variant="outline"
-              sx={{ color: "blue", mt: "5px" }}
-              onClick={() => {
-                setState(false);
-                setId(null);
-              }}
+              variant="contained"
+              sx={{ background: "blue", color: "white" }}
+              onClick={() => setConfirmDelete(false)}
             >
-              cancel
+              Cancel
             </Button>
           </Box>
-        ) : (
-          ""
         )}
       </Box>
     </>
   );
 }
+
 export default AdminBuses;
