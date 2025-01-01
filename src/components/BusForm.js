@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { Col, Form, message, Modal, Row, Select } from "antd";
 import Button from "@mui/material/Button";
 import { useDispatch } from "react-redux";
@@ -13,6 +13,16 @@ function BusForm({
   refreshBuses,
 }) {
   const dispatch = useDispatch();
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (type === "add") {
+      form.resetFields();
+    } else if (type === "edit" && selectedBus) {
+      form.setFieldsValue(selectedBus);
+    }
+  }, [type, selectedBus, form, showBusForm]);
 
   const onFinish = async (values) => {
     try {
@@ -38,9 +48,10 @@ function BusForm({
       }
     } catch (error) {
       dispatch(hideLoading());
-      message.error(error);
+      message.error("Something went wrong");
     }
   };
+
   return (
     <Modal
       width={800}
@@ -54,8 +65,8 @@ function BusForm({
     >
       <Form
         layout="vertical"
+        form={form}
         onFinish={onFinish}
-        initialValues={selectedBus || {}}
         style={{
           padding: "10px",
           background: "rgb(131,34,54,0,1)",
