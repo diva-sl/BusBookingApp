@@ -1,7 +1,7 @@
-import { TextField, Typography, Button } from '@mui/material';
-import { Box } from '@mui/system';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import React, { useEffect, useState } from 'react';
+import { TextField, Typography, Button } from "@mui/material";
+import { Box } from "@mui/system";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import React, { useEffect, useState } from "react";
 import "./login.css";
 import "./global.css";
 import { useNavigate } from "react-router-dom";
@@ -13,20 +13,22 @@ function Register() {
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
   });
   const [signUp, setSignUp] = useState(true); // Initially set to SignUp mode
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate('/');
+    if (localStorage.getItem("token")) {
+      navigate("/");
     }
   }, [navigate]);
 
-  const request = async (type,values) => {
+  const request = async (type, values) => {
     try {
-      console.log(values);
-      const res = await axios.post(`http://localhost:5000/users/${type}`,values);
+      const res = await axios.post(
+        `http://localhost:5000/users/${type}`,
+        values
+      );
       const data = res.data;
 
       if (data.success) {
@@ -35,7 +37,7 @@ function Register() {
           navigate("/");
         } else if (type === "register") {
           alert("Registration successful! Please login.");
-          setSignUp(false); 
+          setSignUp(false);
         }
       }
     } catch (err) {
@@ -46,17 +48,16 @@ function Register() {
   const handleChange = (e) => {
     setInputs((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleSubmit = (e) => {
-
     e.preventDefault();
     if (signUp) {
-      request("register",inputs);
+      request("register", inputs);
     } else {
-      request("login",inputs);
+      request("login", inputs);
     }
   };
 
@@ -70,21 +71,21 @@ function Register() {
   };
 
   return (
-    <div className='main3_div'>
+    <div className="main3_div">
       <form onSubmit={handleSubmit}>
         <Box
           display="flex"
           flexDirection={"column"}
           alignItems="center"
           className="Box"
-          sx={{ width: { md: "40vw", sm: '80vw' } }}
+          sx={{ width: { md: "40vw", sm: "80vw" } }}
         >
-          <Typography variant='h2'>{signUp ? "Register" : "Login"}</Typography>
+          <Typography variant="h2">{signUp ? "Register" : "Login"}</Typography>
           {signUp && (
             <TextField
               value={inputs.name}
               className="text"
-              placeholder='Name'
+              placeholder="Name"
               margin="normal"
               name="name"
               onChange={handleChange}
@@ -92,7 +93,7 @@ function Register() {
           )}
           <TextField
             className="text"
-            placeholder='Email'
+            placeholder="Email"
             margin="normal"
             value={inputs.email}
             name="email"
@@ -100,14 +101,14 @@ function Register() {
           />
           <TextField
             className="text"
-            placeholder='Password'
+            placeholder="Password"
             value={inputs.password}
             margin="normal"
             name="password"
             type="password"
             onChange={handleChange}
           />
-          <Button variant="contained" type="submit" endIcon={<VpnKeyIcon/>}> 
+          <Button variant="contained" type="submit" endIcon={<VpnKeyIcon />}>
             {signUp ? "Sign Up" : "Login"}
           </Button>
           <Button onClick={handleToggleMode}>

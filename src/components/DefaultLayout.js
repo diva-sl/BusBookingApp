@@ -188,16 +188,21 @@ function DefaultLayout({ children }) {
           </Box>
         ))}
       </Box>
-      <Box sx={{ padding: "1vw" }}>
+      <Box
+        sx={{
+          padding: "1vw",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            width: "90%",
+            width: "100%",
             height: "50px",
-            border: "0.5px solid black",
-            boxShadow: "1px 1px 1px",
+            border: "2px solid grey",
+            boxShadow: 2,
+            borderRadius: 2,
             padding: "10px",
             cursor: "pointer",
           }}
