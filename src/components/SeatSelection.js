@@ -1,10 +1,7 @@
 import React from "react";
-import { Row, Col } from "antd";
-import "../bus.css";
+import { Grid, Box, Typography, Paper } from "@mui/material";
 
-function SeatSelction(selectedSeats, setSelectedSeats, bus) {
-  const capacity = bus.capacity;
-
+function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
   const selectOrUnselectSeats = (seatNumber) => {
     if (selectedSeats.includes(seatNumber)) {
       setSelectedSeats(selectedSeats.filter((seat) => seat !== seatNumber));
@@ -12,32 +9,67 @@ function SeatSelction(selectedSeats, setSelectedSeats, bus) {
       setSelectedSeats([...selectedSeats, seatNumber]);
     }
   };
+
   return (
-    <div className="mx-5">
-      <div className="bus-container">
-        <Row gutter={[10, 10]}>
-          {Array.from(Array(capacity).keys()).map((seat) => {
-            let seatClass = "";
-            if (selectedSeats.includes(seat + 1)) {
-              seatClass = "selected-seat";
-            } else if (bus.seatsBooked.includes(seat + 1)) {
-              seatClass = "booked-seat";
-            }
+    <Box p={2}>
+      <Typography variant="h5" color="primary" gutterBottom>
+        Seat Selection
+      </Typography>
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 2,
+          borderRadius: "8px",
+          border: "1px solid #ddd",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <Grid container spacing={1}>
+          {Array.from(Array(bus.capacity).keys()).map((seat) => {
+            const seatNumber = seat + 1;
+            const isBooked = bus.seatsBooked.includes(seatNumber);
+            const isSelected = selectedSeats.includes(seatNumber);
+
             return (
-              <Col span={6}>
-                <div
-                  className={`seat ${seatClass}`}
-                  onClick={() => selectOrUnselectSeats(seat + 1)}
+              <Grid item xs={3} key={seatNumber}>
+                <Box
+                  sx={{
+                    width: "60%",
+                    height: "40px", // Reduced height
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "6px", // Smaller border radius
+                    backgroundColor: isBooked
+                      ? "red"
+                      : isSelected
+                      ? "green"
+                      : "lightgray",
+                    color: isBooked ? "white" : "black",
+                    cursor: isBooked ? "not-allowed" : "pointer",
+                    border: isSelected ? "2px solid #4CAF50" : "1px solid #ccc",
+                    boxShadow: isSelected
+                      ? "0px 4px 6px rgba(0, 128, 0, 0.4)"
+                      : "0px 1px 3px rgba(0, 0, 0, 0.1)",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      boxShadow: !isBooked
+                        ? "0px 4px 8px rgba(0, 0, 0, 0.2)"
+                        : "none",
+                    },
+                    fontSize: "14px", // Smaller font size
+                  }}
+                  onClick={() => !isBooked && selectOrUnselectSeats(seatNumber)}
                 >
-                  {seat + 1}
-                </div>
-              </Col>
+                  {seatNumber}
+                </Box>
+              </Grid>
             );
           })}
-        </Row>
-      </div>
-    </div>
+        </Grid>
+      </Paper>
+    </Box>
   );
 }
 
-export default SeatSelction;
+export default SeatSelection;

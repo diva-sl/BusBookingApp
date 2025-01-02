@@ -1,10 +1,10 @@
-import { Col, message, Row } from "antd";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import StripeCheckOut from "react-stripe-checkout";
-import { hideLoading, showLoading } from "../redux/AlertSlice";
+import { Box, Button, Typography, Grid } from "@mui/material";
+import StripeCheckout from "react-stripe-checkout";
+import { showLoading, hideLoading } from "../redux/AlertSlice";
 import SeatSelection from "../components/SeatSelection";
 
 function BookNow() {
@@ -13,29 +13,29 @@ function BookNow() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [bus, setBus] = useState(null);
+
   const getBus = async () => {
     try {
-      dispatch(showLoading());
+      // dispatch(showLoading());
       const response = await axios.post(
         `http://localhost:5000/buses/get-bus-by-id`,
-        {
-          _id: params.id,
-        },
+        { _id: params.id },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      dispatch(hideLoading());
-      if (response.data.sucess) {
+      // dispatch(hideLoading());
+      if (response.data.success) {
         setBus(response.data.data);
       } else {
-        message.error(response.data.message);
+        alert(response.data.message);
       }
     } catch (error) {
-      dispatch(hideLoading());
-      message.error(error.message);
+      // dispatch(hideLoading());
+      alert(error.message);
     }
   };
+
   const bookNow = async () => {
     try {
       dispatch(showLoading());
@@ -49,14 +49,14 @@ function BookNow() {
       );
       dispatch(hideLoading());
       if (response.data.success) {
-        message.success(response.data.message);
+        alert(response.data.message);
         navigate("/booking");
       } else {
-        message.error(response.data.message);
+        alert(response.data.message);
       }
     } catch (error) {
       dispatch(hideLoading());
-      message.error(error.message);
+      alert(error.message);
     }
   };
 
@@ -73,76 +73,89 @@ function BookNow() {
       );
       dispatch(hideLoading());
       if (response.data.success) {
-        message.success(response.data.message);
+        alert(response.data.message);
         bookNow(response.data.data.transactionId);
       } else {
-        message.error(response.data.message);
+        alert(response.data.message);
       }
     } catch (error) {
       dispatch(hideLoading());
-      message.error(error.message);
+      alert(error.message);
     }
   };
+  console.log(bus);
   useEffect(() => {
     getBus();
   }, []);
+
   return (
-    <div>
+    <Box p={3}>
       {bus && (
-        <Row className="mt-3" gutter={[30, 30]}>
-          <Col lg={12} xs={24} sm={24}>
-            <h1 className="text-2xl primary-text">{bus.name}</h1>
-            <h1 className="text-md">
-              {bus.from}-{bus.to}
-            </h1>
-            <hr />
-            <div className="flex flex-col gap-2">
-              <p className="text-md">Journey Date : {bus.journeyDate} </p>
-              <p className="text-md">Fare : {bus.fare} </p>
-              <p className="text-md">Departure Time : {bus.Departure} </p>
-              <p className="text-md">Arrival Time : {bus.arrival} </p>
-              <p className="text-md">Capacity : {bus.capacity} </p>
-              <p className="text-md">
-                Seats Left : {bus.capacity - bus.seatsBooked.length}
-              </p>
-            </div>
-            <hr />
-            <div className="flex flex-col gap-2">
-              <h1 className="text-2xl">
-                Selected Seats:{selectedSeats.join(", ")}
-              </h1>
-              <h1 className="text-2xl mt-2">
-                Fare : {bus.fare * selectedSeats.length} /-
-              </h1>
-              <hr />
-              <StripeCheckOut
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h4" fontWeight="bold" color="primary">
+              {bus.name}
+            </Typography>
+            <Typography variant="subtitle1">
+              {bus.from} - {bus.to}
+            </Typography>
+            <Box mt={2}>
+              <Typography>
+                <b>Journey Date:</b> {bus.journeyDate}
+              </Typography>
+              <Typography>
+                <b>Fare:</b> ₹{bus.fare}
+              </Typography>
+              <Typography>
+                <b>Departure Time:</b> {bus.departure}
+              </Typography>
+              <Typography>
+                <b>Arrival Time:</b> {bus.arrival}
+              </Typography>
+              <Typography>
+                <b>Capacity:</b> {bus.capacity}
+              </Typography>
+              <Typography>
+                <b>Seats Left:</b> {bus.capacity - bus.seatsBooked.length}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SeatSelection
+              selectedSeats={selectedSeats}
+              setSelectedSeats={setSelectedSeats}
+              bus={bus}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Box mt={2}>
+              <Typography variant="h6">
+                Selected Seats: {selectedSeats.join(", ")}
+              </Typography>
+              <Typography variant="h6">
+                Total Fare: ₹{selectedSeats.length * bus.fare}
+              </Typography>
+              <StripeCheckout
                 billingAddress
                 token={onToken}
-                amount={bus.fare * selectedSeats.length * 100}
+                amount={selectedSeats.length * bus.fare * 100}
                 currency="INR"
                 stripeKey="pk_test_51IYnC0SIR2AbPxU0TMStZwFUoaDZle9yXVygpVIzg36LdpO8aSG8B9j2C0AikiQw2YyCI8n4faFYQI5uG3Nk5EGQ00lCfjXYvZ"
               >
-                <button
-                  className={`primary-btn ${
-                    selectedSeats.length === 0 && "disabled-btn"
-                  }`}
+                <Button
+                  variant="contained"
+                  color="primary"
                   disabled={selectedSeats.length === 0}
                 >
                   Book Now
-                </button>
-              </StripeCheckOut>
-            </div>
-          </Col>
-          <Col lg={12} xs={24} sm={24}>
-            <SeatSelection>
-              selectedSeats ={selectedSeats}
-              setSelectedSeats={setSelectedSeats}
-              bus={bus}
-            </SeatSelection>
-          </Col>
-        </Row>
+                </Button>
+              </StripeCheckout>
+            </Box>
+          </Grid>
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 }
+
 export default BookNow;
