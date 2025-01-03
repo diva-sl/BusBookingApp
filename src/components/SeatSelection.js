@@ -11,8 +11,8 @@ function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
   };
 
   return (
-    <Box p={2}>
-      <Typography variant="h5" color="primary" gutterBottom>
+    <Box p={2} sx={{ width: "50%", height: "300px" }}>
+      <Typography variant="h4" color="primary" gutterBottom>
         Seat Selection
       </Typography>
       <Paper
@@ -24,7 +24,7 @@ function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <Grid container spacing={1}>
+        <Grid container spacing={2}>
           {Array.from(Array(bus.capacity).keys()).map((seat) => {
             const seatNumber = seat + 1;
             const isBooked = bus.seatsBooked.includes(seatNumber);
@@ -34,12 +34,12 @@ function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
               <Grid item xs={3} key={seatNumber}>
                 <Box
                   sx={{
-                    width: "60%",
-                    height: "40px", // Reduced height
+                    width: "100%",
+                    height: "40px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: "6px", // Smaller border radius
+                    borderRadius: "6px",
                     backgroundColor: isBooked
                       ? "red"
                       : isSelected
@@ -57,7 +57,7 @@ function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
                         ? "0px 4px 8px rgba(0, 0, 0, 0.2)"
                         : "none",
                     },
-                    fontSize: "14px", // Smaller font size
+                    fontSize: "14px",
                   }}
                   onClick={() => !isBooked && selectOrUnselectSeats(seatNumber)}
                 >

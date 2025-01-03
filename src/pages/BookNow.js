@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, Button, Typography, Grid } from "@mui/material";
+import { Box, Button, Typography, Grid, Divider } from "@mui/material";
 import StripeCheckout from "react-stripe-checkout";
 import { showLoading, hideLoading } from "../redux/AlertSlice";
 import SeatSelection from "../components/SeatSelection";
@@ -96,29 +96,24 @@ function BookNow() {
             <Typography variant="h4" fontWeight="bold" color="primary">
               {bus.name}
             </Typography>
-            <Typography variant="subtitle1">
-              {bus.from} - {bus.to}
-            </Typography>
-            <Box mt={2}>
-              <Typography>
-                <b>Journey Date:</b> {bus.journeyDate}
+            <Typography variant="subtitle1">{`${bus.from} - ${bus.to}`}</Typography>
+            <Divider sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)" }} />
+            {[
+              { label: "Journey Date", value: bus.journeyDate },
+              { label: "Fare", value: `₹${bus.fare}` },
+              { label: "Departure Time", value: bus.departure },
+              { label: "Arrival Time", value: bus.arrival },
+              { label: "Capacity", value: bus.capacity },
+              {
+                label: "Seats Left",
+                value: bus.capacity - bus.seatsBooked.length,
+              },
+            ].map((item, index) => (
+              <Typography key={index}>
+                <b>{item.label}:</b> {item.value}
               </Typography>
-              <Typography>
-                <b>Fare:</b> ₹{bus.fare}
-              </Typography>
-              <Typography>
-                <b>Departure Time:</b> {bus.departure}
-              </Typography>
-              <Typography>
-                <b>Arrival Time:</b> {bus.arrival}
-              </Typography>
-              <Typography>
-                <b>Capacity:</b> {bus.capacity}
-              </Typography>
-              <Typography>
-                <b>Seats Left:</b> {bus.capacity - bus.seatsBooked.length}
-              </Typography>
-            </Box>
+            ))}
+            <Divider sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)" }} />
           </Grid>
           <Grid item xs={12} md={6}>
             <SeatSelection
@@ -129,12 +124,41 @@ function BookNow() {
           </Grid>
           <Grid item xs={12}>
             <Box mt={2}>
-              <Typography variant="h6">
-                Selected Seats: {selectedSeats.join(", ")}
-              </Typography>
-              <Typography variant="h6">
-                Total Fare: ₹{selectedSeats.length * bus.fare}
-              </Typography>
+              {[
+                {
+                  label: "Selected Seats",
+                  value: selectedSeats.join(", ") || "",
+                  size: "1.5rem",
+                },
+                {
+                  label: "Total Fare",
+                  value: `₹${selectedSeats.length * bus.fare}`,
+                  size: "1.5rem",
+                },
+              ].map((item, index) => (
+                <Typography
+                  key={index}
+                  variant="h6"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <Box
+                    component="span"
+                    sx={{ fontSize: "1rem", fontWeight: "bold", mr: 1 }}
+                  >
+                    {item.label}:
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{
+                      fontSize: item.size,
+                      fontWeight: "bold",
+                      color: "primary.main",
+                    }}
+                  >
+                    {item.value}
+                  </Box>
+                </Typography>
+              ))}
               <StripeCheckout
                 billingAddress
                 token={onToken}
