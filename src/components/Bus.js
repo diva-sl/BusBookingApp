@@ -47,7 +47,7 @@ function Bus({ bus }) {
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Fare
             </Typography>
-            <Typography variant="body1">$ {bus.fare} /-</Typography>
+            <Typography variant="body1">₹ {bus.fare} /-</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>

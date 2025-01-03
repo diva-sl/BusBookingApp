@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, Button, Typography, Grid, Divider } from "@mui/material";
+import { Box, Button, Typography, Grid, Divider, Paper } from "@mui/material";
 import StripeCheckout from "react-stripe-checkout";
 import { showLoading, hideLoading } from "../redux/AlertSlice";
 import SeatSelection from "../components/SeatSelection";
@@ -83,7 +83,7 @@ function BookNow() {
       alert(error.message);
     }
   };
-  console.log(bus);
+
   useEffect(() => {
     getBus();
   }, []);
@@ -91,74 +91,76 @@ function BookNow() {
   return (
     <Box p={3}>
       {bus && (
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <Typography variant="h4" fontWeight="bold" color="primary">
-              {bus.name}
-            </Typography>
-            <Typography variant="subtitle1">{`${bus.from} - ${bus.to}`}</Typography>
-            <Divider sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)" }} />
-            {[
-              { label: "Journey Date", value: bus.journeyDate },
-              { label: "Fare", value: `₹${bus.fare}` },
-              { label: "Departure Time", value: bus.departure },
-              { label: "Arrival Time", value: bus.arrival },
-              { label: "Capacity", value: bus.capacity },
-              {
-                label: "Seats Left",
-                value: bus.capacity - bus.seatsBooked.length,
-              },
-            ].map((item, index) => (
-              <Typography key={index}>
-                <b>{item.label}:</b> {item.value}
+            <Paper
+              elevation={3}
+              sx={{
+                padding: 3,
+                borderRadius: "8px",
+                border: "1px solid #ddd",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Typography variant="h4" fontWeight="bold" color="primary">
+                {bus.name}
               </Typography>
-            ))}
-            <Divider sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)" }} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <SeatSelection
-              selectedSeats={selectedSeats}
-              setSelectedSeats={setSelectedSeats}
-              bus={bus}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Box mt={2}>
+              <Typography variant="subtitle1">{`${bus.from} - ${bus.to}`}</Typography>
+              <Divider sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)" }} />
               {[
+                { label: "Journey Date", value: bus.journeyDate },
+                { label: "Fare", value: `₹${bus.fare}` },
+                { label: "Departure Time", value: bus.departure },
+                { label: "Arrival Time", value: bus.arrival },
+                { label: "Capacity", value: bus.capacity },
                 {
-                  label: "Selected Seats",
-                  value: selectedSeats.join(", ") || "",
-                  size: "1.5rem",
-                },
-                {
-                  label: "Total Fare",
-                  value: `₹${selectedSeats.length * bus.fare}`,
-                  size: "1.5rem",
+                  label: "Seats Left",
+                  value: bus.capacity - bus.seatsBooked.length,
                 },
               ].map((item, index) => (
-                <Typography
-                  key={index}
-                  variant="h6"
-                  sx={{ display: "flex", alignItems: "center" }}
-                >
-                  <Box
-                    component="span"
-                    sx={{ fontSize: "1rem", fontWeight: "bold", mr: 1 }}
-                  >
-                    {item.label}:
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{
-                      fontSize: item.size,
-                      fontWeight: "bold",
-                      color: "primary.main",
-                    }}
-                  >
-                    {item.value}
-                  </Box>
+                <Typography key={index} sx={{ mb: 1 }}>
+                  <b>{item.label}:</b> {item.value}
                 </Typography>
               ))}
+              <Divider
+                sx={{ my: 2, borderColor: "rgba(0, 0, 0, 0.2)", mb: 10 }}
+              />
+              <Box mt={2}>
+                {[
+                  {
+                    label: "Selected Seats",
+                    value: selectedSeats.join(", ") || "",
+                    size: "1.2rem",
+                  },
+                  {
+                    label: "Total Fare",
+                    value: `₹${selectedSeats.length * bus.fare}`,
+                    size: "1.2rem",
+                  },
+                ].map((item, index) => (
+                  <Typography
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{ fontSize: "1rem", fontWeight: "bold", mr: 1 }}
+                    >
+                      {item.label}:
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{
+                        fontSize: item.size,
+                        fontWeight: "bold",
+                        color: "primary.main",
+                      }}
+                    >
+                      {item.value}
+                    </Box>
+                  </Typography>
+                ))}
+              </Box>
               <StripeCheckout
                 billingAddress
                 token={onToken}
@@ -174,7 +176,14 @@ function BookNow() {
                   Book Now
                 </Button>
               </StripeCheckout>
-            </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SeatSelection
+              selectedSeats={selectedSeats}
+              setSelectedSeats={setSelectedSeats}
+              bus={bus}
+            />
           </Grid>
         </Grid>
       )}
