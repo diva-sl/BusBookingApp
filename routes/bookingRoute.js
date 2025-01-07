@@ -4,12 +4,7 @@ const Booking = require("../models/bookingModel");
 const Bus = require("../models/busModel");
 // const Stripe = require("stripe");
 
-const stripe = require("stripe")(
-  "sk_test_51QdPvNDXhLCwOGLxPd4y8VkokPpzioBGjZrhHnBmvS7Hqdh5rh4z3Orzs9UNb6JFNIWLd6HBvlUOkGnp7UpSRWcl00YljDVVc6"
-);
-// const stripe = Stripe(
-//   "sk_test_51QdPvNDXhLCwOGLxPd4y8VkokPpzioBGjZrhHnBmvS7Hqdh5rh4z3Orzs9UNb6JFNIWLd6HBvlUOkGnp7UpSRWcl00YljDVVc6"
-// );
+const stripe = require("stripe")(process.env.stripe_key);
 
 const { v4: uuidv4 } = require("uuid");
 
@@ -22,7 +17,6 @@ router.post("/book-seat", authMiddleware, async (req, res) => {
       user: req.body.userId,
     });
     await newBooking.save();
-    console.log(req.body, newBooking);
     const bus = await Bus.findById(req.body.bus);
     bus.seatsBooked = [...bus.seatsBooked, ...req.body.seats];
     await bus.save();
