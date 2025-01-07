@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -11,21 +10,24 @@ import {
   Paper,
   Typography,
   IconButton,
+  Divider,
+  Button,
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Modal } from "antd";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import { showLoading, hideLoading } from "../redux/AlertSlice";
 import PageTitle from "../components/PageTitle";
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
   const dispatch = useDispatch();
 
-  // Fetch bookings
   const getBookings = async () => {
     try {
-      //   dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/api/bookings/get-bookings-by-user-id",
         {},
@@ -33,14 +35,12 @@ function Bookings() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      //   dispatch(hideLoading());
       if (response.data.success) {
         setBookings(response.data.data);
       } else {
         console.error(response.data.message);
       }
     } catch (error) {
-      //   dispatch(hideLoading());
       console.error(error);
     }
   };
@@ -48,6 +48,12 @@ function Bookings() {
   useEffect(() => {
     getBookings();
   }, []);
+
+  const handlePrint = () => {
+    console.log("Printing ticket", selectedTicket);
+    setShowPrintModal(false);
+    setSelectedTicket(null);
+  };
 
   return (
     <Box sx={{ padding: 2 }}>
@@ -89,13 +95,17 @@ function Bookings() {
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
-                      onClick={() => console.log("Print booking", booking._id)}
-                      sx={{
-                        color: "#6c757d",
-                        "&:hover": { color: "#007bff" },
+                      onClick={() => {
+                        setSelectedTicket(booking);
+                        setShowPrintModal(true);
                       }}
                     >
-                      <PrintIcon />
+                      <VisibilityIcon
+                        sx={{
+                          color: "#6c757d",
+                          "&:hover": { color: "#007bff" },
+                        }}
+                      />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -112,6 +122,75 @@ function Bookings() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {showPrintModal && (
+        <Modal
+          title={<Typography variant="h6">Print Ticket</Typography>}
+          onCancel={() => {
+            setShowPrintModal(false);
+            setSelectedTicket(null);
+          }}
+          visible={showPrintModal}
+          footer={null}
+        >
+          <Box sx={{ padding: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              {selectedTicket.bus.name}
+            </Typography>
+            <Typography variant="body1" color="textSecondary" gutterBottom>
+              {selectedTicket.bus.from} - {selectedTicket.bus.to}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="body2" gutterBottom>
+              <strong>Journey Date:</strong> {selectedTicket.bus.journeyDate}
+            </Typography>
+            <Typography variant="body2" gutterBottom>
+              <strong>Journey Time:</strong> {selectedTicket.bus.departure}
+            </Typography>
+            <Typography variant="body2" gutterBottom>
+              <strong>Arrival Time:</strong> {selectedTicket.bus.arrival}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="body2" gutterBottom>
+              <strong>Seat Numbers:</strong> {selectedTicket.seats.join(", ")}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="h6" color="textSecondary">
+              Total Amount: ₹
+              {selectedTicket.bus.fare * selectedTicket.seats.length} -/
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+              marginTop: 3,
+            }}
+          >
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => {
+                setShowPrintModal(false);
+                setSelectedTicket(null);
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button variant="contained" color="primary" onClick={handlePrint}>
+              <PrintIcon
+                sx={{
+                  color: "White",
+                  "&:hover": { color: "#007bff" },
+                }}
+              />
+              Print
+            </Button>
+          </Box>
+        </Modal>
+      )}
     </Box>
   );
 }
