@@ -19,7 +19,6 @@ function SeatSelection({ selectedSeats, setSelectedSeats, bus }) {
   // Split seat pairs alternately into two columns
   const firstColumnPairs = seatPairs.filter((_, index) => index % 2 === 0);
   const secondColumnPairs = seatPairs.filter((_, index) => index % 2 !== 0);
-
   return (
     <Grid item xs={12} md={10} sx={{ ml: 5 }}>
       <Paper

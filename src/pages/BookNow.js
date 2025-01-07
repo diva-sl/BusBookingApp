@@ -36,21 +36,24 @@ function BookNow() {
     }
   };
 
-  const bookNow = async () => {
+  const bookNow = async (transactionId, seats) => {
     try {
       dispatch(showLoading());
       const response = await axios.post(
-        `http://localhost:5000/api/booking/book-seat`,
+        `http://localhost:5000/api/bookings/book-seat`,
         {
           bus: bus._id,
-          seats: selectedSeats,
+          seats,
+          transactionId,
         },
-        { header: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       dispatch(hideLoading());
       if (response.data.success) {
         alert(response.data.message);
-        navigate("/booking");
+        // navigate("/booking");
       } else {
         alert(response.data.message);
       }
@@ -65,16 +68,16 @@ function BookNow() {
       dispatch(showLoading());
       const response = await axios.post(
         `http://localhost:5000/api/bookings/make-payment`,
+        { token, amount: selectedSeats.length * bus.fare * 100 },
         {
-          token,
-          amount: selectedSeats.length * bus.fare * 100,
-        },
-        { header: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
+
       dispatch(hideLoading());
       if (response.data.success) {
+        bookNow(response.data.data.transactionId, selectedSeats);
         alert(response.data.message);
-        bookNow(response.data.data.transactionId);
       } else {
         alert(response.data.message);
       }
@@ -163,10 +166,10 @@ function BookNow() {
               </Box>
               <StripeCheckout
                 billingAddress
-                token={onToken}
                 amount={selectedSeats.length * bus.fare * 100}
                 currency="INR"
-                stripeKey="pk_test_51IYnC0SIR2AbPxU0TMStZwFUoaDZle9yXVygpVIzg36LdpO8aSG8B9j2C0AikiQw2YyCI8n4faFYQI5uG3Nk5EGQ00lCfjXYvZ"
+                token={onToken}
+                stripeKey="pk_test_51QdPvNDXhLCwOGLx3hgVQhuhJ4F6ng6Fwu0X5AKK0NxYvYaKYlxEJs81XhYxpiidl0H5jrvouHhQzelxdIxpD4jR00NQBkOUKb"
               >
                 <Button
                   variant="contained"

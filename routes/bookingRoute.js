@@ -2,7 +2,15 @@ const router = require("express").Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const Booking = require("../models/bookingModel");
 const Bus = require("../models/busModel");
-const stripe = require("stripe")(process.env.stripe_key);
+// const Stripe = require("stripe");
+
+const stripe = require("stripe")(
+  "sk_test_51QdPvNDXhLCwOGLxPd4y8VkokPpzioBGjZrhHnBmvS7Hqdh5rh4z3Orzs9UNb6JFNIWLd6HBvlUOkGnp7UpSRWcl00YljDVVc6"
+);
+// const stripe = Stripe(
+//   "sk_test_51QdPvNDXhLCwOGLxPd4y8VkokPpzioBGjZrhHnBmvS7Hqdh5rh4z3Orzs9UNb6JFNIWLd6HBvlUOkGnp7UpSRWcl00YljDVVc6"
+// );
+
 const { v4: uuidv4 } = require("uuid");
 
 //book a seat
@@ -10,13 +18,15 @@ router.post("/book-seat", authMiddleware, async (req, res) => {
   try {
     const newBooking = new Booking({
       ...req.body,
+      // transactionId: "1234", without stripe
       user: req.body.userId,
     });
     await newBooking.save();
+    console.log(req.body, newBooking);
     const bus = await Bus.findById(req.body.bus);
     bus.seatsBooked = [...bus.seatsBooked, ...req.body.seats];
     await bus.save();
-    res.send(200).send({
+    res.status(200).send({
       message: "Booking Successful",
       data: newBooking,
       success: true,
@@ -39,6 +49,7 @@ router.post("/make-payment", authMiddleware, async (req, res) => {
       email: token.email,
       source: token.id,
     });
+
     const payment = await stripe.charges.create(
       {
         amount: amount,
@@ -53,7 +64,7 @@ router.post("/make-payment", authMiddleware, async (req, res) => {
     if (payment) {
       res.status(200).send({
         message: "Payment Successful",
-        date: {
+        data: {
           transactionId: payment.source.id,
         },
         success: true,

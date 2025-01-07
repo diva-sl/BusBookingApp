@@ -2,27 +2,27 @@ const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema(
   {
-    bus:{
+    bus: {
       type: mongoose.Schema.ObjectId,
       ref: "buses",
       require: true,
     },
-    user:{
+    user: {
       type: mongoose.Schema.ObjectId,
       ref: "users",
       require: true,
     },
-    seats:{
+    seats: {
       type: Array,
       require: true,
     },
-    transactionId:{
+    transactionId: {
       type: String,
       require: true,
     },
   },
   {
-  timestamps: true,
+    timestamps: true,
   }
 );
 
