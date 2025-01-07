@@ -81,7 +81,7 @@ router.post("/make-payment", authMiddleware, async (req, res) => {
 
 // get booking by user id
 
-router.post("/get-booking-by-user-id", authMiddleware, async (req, res) => {
+router.post("/get-bookings-by-user-id", authMiddleware, async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.body.userId })
       .populate("bus")

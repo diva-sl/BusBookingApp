@@ -31,7 +31,7 @@ function DefaultLayout({ children }) {
 
   const userMenu = [
     { name: "Home", icon: <HomeIcon />, path: "/" },
-    { name: "Booking", icon: <BookIcon />, path: "/" },
+    { name: "Booking", icon: <BookIcon />, path: "/bookings" },
     { name: "Profile", icon: <AccountBoxIcon />, path: "/" },
     { name: "Logout", icon: <LogoutIcon />, action: handleLogout },
   ];
