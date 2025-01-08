@@ -53,7 +53,7 @@ function BookNow() {
       dispatch(hideLoading());
       if (response.data.success) {
         alert(response.data.message);
-        // navigate("/booking");
+        navigate("/bookings");
       } else {
         alert(response.data.message);
       }

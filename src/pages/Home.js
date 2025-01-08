@@ -44,11 +44,13 @@ function Home() {
         }}
       >
         <Grid container spacing={2}>
-          {buses.map((bus) => (
-            <Grid item xs={12} sm={6} md={6} key={bus._id}>
-              <Bus bus={bus} />
-            </Grid>
-          ))}
+          {buses
+            .filter((bus) => bus.status === "Yet To Start")
+            .map((bus) => (
+              <Grid item xs={12} sm={6} md={6} key={bus._id}>
+                <Bus bus={bus} />
+              </Grid>
+            ))}
         </Grid>
       </Box>
     </Container>

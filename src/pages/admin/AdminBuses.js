@@ -87,6 +87,7 @@ function AdminBuses() {
         <PageTitle title="Buses" />
         <Button
           variant="contained"
+          color="primary"
           sx={{ background: "royalblue" }}
           onClick={() => {
             setShowBusForm(true);
@@ -116,6 +117,9 @@ function AdminBuses() {
                   From
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                  Date
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   To
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
@@ -125,7 +129,7 @@ function AdminBuses() {
                   Arrival
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  Date
+                  Status
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Actions
@@ -139,9 +143,10 @@ function AdminBuses() {
                     <TableCell align="center">{bus.name}</TableCell>
                     <TableCell align="center">{bus.from}</TableCell>
                     <TableCell align="center">{bus.to}</TableCell>
+                    <TableCell align="center">{bus.journeyDate}</TableCell>
                     <TableCell align="center">{bus.departure}</TableCell>
                     <TableCell align="center">{bus.arrival}</TableCell>
-                    <TableCell align="center">{bus.journeyDate}</TableCell>
+                    <TableCell align="center">{bus.status}</TableCell>
                     <TableCell align="center">
                       <Box
                         sx={{

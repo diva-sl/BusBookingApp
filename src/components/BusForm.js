@@ -130,7 +130,7 @@ function BusForm({
           <Col lg={8} xs={24}>
             <Form.Item label="Journey Date" name="journeyDate">
               <input
-                type="text"
+                type="date"
                 style={{
                   width: "95%",
                   height: "35px",
@@ -143,7 +143,7 @@ function BusForm({
           <Col lg={8} xs={24}>
             <Form.Item label="Departure" name="departure">
               <input
-                type="type"
+                type="time"
                 style={{
                   width: "95%",
                   height: "35px",
@@ -156,7 +156,7 @@ function BusForm({
           <Col lg={8} xs={24}>
             <Form.Item label="Arrival" name="arrival">
               <input
-                type="text"
+                type="time"
                 style={{
                   width: "95%",
                   height: "35px",
