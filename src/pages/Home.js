@@ -3,19 +3,35 @@ import axios from "axios";
 import { showLoading, hideLoading } from "../redux/AlertSlice";
 import { useEffect, useState } from "react";
 import Bus from "../components/Bus";
-import { Box, Grid, Container } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+} from "@mui/material";
 
 function Home() {
   const user = useSelector((state) => state.users.user);
+  const [filters, setFilters] = useState({ from: "", to: "", journeyDate: "" });
   const [buses, setBuses] = useState([]);
   const dispatch = useDispatch();
 
   const getBuses = async () => {
+    const activeFilters = {};
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        activeFilters[key] = filters[key];
+      }
+    });
+
     try {
       // dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/buses/get-all-buses",
-        {},
+        activeFilters,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -35,22 +51,110 @@ function Home() {
   useEffect(() => {
     getBuses();
   }, []);
-
+  const handleClearFilters = () => {
+    setFilters({ from: "", to: "", journeyDate: "" });
+    getBuses();
+  };
   return (
     <Container sx={{ mt: 4 }}>
-      <Box
+      <Paper
+        elevation={2}
         sx={{
-          display: "flex",
+          padding: 2,
+          marginBottom: 4,
+          borderRadius: 2,
+          backgroundColor: "#f9f9f9",
         }}
       >
-        <Grid container spacing={2}>
-          {buses
-            .filter((bus) => bus.status === "Yet To Start")
-            .map((bus) => (
-              <Grid item xs={12} sm={6} md={6} key={bus._id}>
-                <Bus bus={bus} />
-              </Grid>
-            ))}
+        <Typography variant="h6" sx={{ marginBottom: 2, textAlign: "center" }}>
+          Find Your Bus
+        </Typography>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              label="From"
+              variant="outlined"
+              value={filters.from}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, from: e.target.value }))
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              label="To"
+              variant="outlined"
+              value={filters.to}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, to: e.target.value }))
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              label="Journey Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              variant="outlined"
+              value={filters.journeyDate}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  journeyDate: e.target.value,
+                }))
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 1,
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getBuses}
+                fullWidth
+              >
+                Filter
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleClearFilters}
+                fullWidth
+              >
+                Clear
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
+      <Box>
+        <Grid container spacing={3}>
+          {buses.length > 0 ? (
+            buses
+              .filter((bus) => bus.status === "Yet To Start")
+              .map((bus) => (
+                <Grid item xs={12} sm={6} md={4} key={bus._id}>
+                  <Bus bus={bus} />
+                </Grid>
+              ))
+          ) : (
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              sx={{ textAlign: "center", width: "100%", mt: 2 }}
+            >
+              No buses available. Please modify your search criteria.
+            </Typography>
+          )}
         </Grid>
       </Box>
     </Container>

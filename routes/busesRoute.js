@@ -6,13 +6,22 @@ const Bus = require("../models/busModel");
 const { v4: uuidv4 } = require("uuid");
 
 // get-all-buses
-
 router.post("/get-all-buses", authMiddleware, async (req, res) => {
   try {
-    const buses = await Bus.find();
-    return res.status(200).send({
+    const { userId, from, to, journeyDate, ...rest } = req.body;
+
+    const filters = {
+      ...(from && { from: { $regex: new RegExp(from, "i") } }),
+      ...(to && { to: { $regex: new RegExp(to, "i") } }),
+      ...(journeyDate && { journeyDate }),
+      ...rest,
+    };
+
+    const buses = await Bus.find(filters);
+
+    res.status(200).send({
       success: true,
-      message: "Buses Fetched Sucessfully.",
+      message: "Buses fetched successfully.",
       data: buses,
     });
   } catch (error) {
