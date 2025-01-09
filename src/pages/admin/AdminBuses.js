@@ -9,8 +9,15 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Block as BlockIcon,
+} from "@mui/icons-material";
 import PageTitle from "../../components/PageTitle";
 import BusForm from "../../components/BusForm";
 import axios from "axios";
@@ -49,7 +56,7 @@ function AdminBuses() {
 
   const deleteBus = async () => {
     try {
-      // dispatch(showLoading());
+      dispatch(showLoading());
       const response = await axios.post(
         "http://localhost:5000/buses/delete-bus",
         { _id: busToDelete },
@@ -57,7 +64,7 @@ function AdminBuses() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      // dispatch(hideLoading());
+      dispatch(hideLoading());
       if (response.data.success) {
         setBuses(buses.filter((bus) => bus._id !== busToDelete));
         setConfirmDelete(false);
@@ -67,7 +74,7 @@ function AdminBuses() {
       }
     } catch (error) {
       console.error(error);
-      // dispatch(hideLoading());
+      dispatch(hideLoading());
     }
   };
 
@@ -81,20 +88,32 @@ function AdminBuses() {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          padding: "10px",
+          alignItems: "center",
+          padding: "15px 20px",
+          backgroundColor: "rgb(101,101,101,0.1)",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          marginTop: "30px",
         }}
       >
-        <PageTitle title="Buses" />
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "darkblue" }}>
+          Bus Management
+        </Typography>
         <Button
           variant="contained"
-          color="primary"
-          sx={{ background: "royalblue" }}
+          sx={{
+            background: "#007bff",
+            fontSize: "16px",
+            padding: "10px 20px",
+            borderRadius: "25px",
+            fontWeight: "bold",
+          }}
           onClick={() => {
             setShowBusForm(true);
             setSelectedBus(null);
           }}
         >
-          Add Bus
+          + Add Bus
         </Button>
       </Box>
 
@@ -109,7 +128,9 @@ function AdminBuses() {
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
             <TableHead>
-              <TableRow sx={{ background: "rgb(101,101,101,.2)" }}>
+              <TableRow
+                sx={{ background: "rgb(101,101,101,.2)", height: "70px" }}
+              >
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Bus Name
                 </TableCell>
@@ -117,10 +138,10 @@ function AdminBuses() {
                   From
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  Date
+                  To
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  To
+                  Date
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Departure
@@ -153,30 +174,43 @@ function AdminBuses() {
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
-                          gap: "10px",
+                          gap: "5px",
                         }}
                       >
-                        <EditIcon
-                          onClick={() => {
-                            setShowBusForm(true);
-                            setSelectedBus(bus);
-                          }}
-                          sx={{ cursor: "pointer", color: "#6c757d" }}
-                        />
-                        <DeleteIcon
-                          onClick={() => {
-                            setConfirmDelete(true);
-                            setBusToDelete(bus._id);
-                          }}
-                          sx={{ cursor: "pointer", color: "#c82333" }}
-                        />
+                        <Tooltip title="Edit Bus" arrow>
+                          <IconButton
+                            onClick={() => {
+                              setShowBusForm(true);
+                              setSelectedBus(bus);
+                            }}
+                            sx={{
+                              color: "#6c757d",
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Delete Bus" arrow>
+                          <IconButton
+                            onClick={() => {
+                              setConfirmDelete(true);
+                              setBusToDelete(bus._id);
+                            }}
+                            sx={{
+                              color: "#c82333",
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={8} align="center">
                     No buses available
                   </TableCell>
                 </TableRow>
@@ -197,9 +231,15 @@ function AdminBuses() {
               zIndex: 3,
               textAlign: "center",
               boxShadow: "1px 1px 5px red",
+              borderRadius: "10px",
             }}
           >
-            <h5>Are you sure you want to delete this bus?</h5>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", marginBottom: "20px" }}
+            >
+              Are you sure you want to delete this bus?
+            </Typography>
             <Button
               variant="contained"
               sx={{ background: "red", color: "white", marginRight: "10px" }}

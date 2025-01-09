@@ -56,7 +56,14 @@ function Home() {
     getBuses();
   };
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container
+      sx={{
+        mt: 4,
+        maxHeight: "calc(80vh - 20px)",
+        overflowY: "auto",
+        padding: 2,
+      }}
+    >
       <Paper
         elevation={2}
         sx={{

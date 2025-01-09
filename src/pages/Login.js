@@ -1,7 +1,7 @@
-import { TextField, Typography, Button } from '@mui/material';
-import { Box } from '@mui/system';
-import LoginIcon from '@mui/icons-material/Login';
-import React, { useEffect, useState } from 'react';
+import { TextField, Typography, Button } from "@mui/material";
+import { Box } from "@mui/system";
+import LoginIcon from "@mui/icons-material/Login";
+import React, { useEffect, useState } from "react";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,13 +10,13 @@ function Login() {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [signUp, setSignUp] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate('/');
+    if (localStorage.getItem("token")) {
+      navigate("/");
     }
   }, [navigate]);
 
@@ -25,38 +25,36 @@ function Login() {
       const res = await axios.post(`http://localhost:5000/users/${type}`, {
         name: inputs.name,
         email: inputs.email,
-        password: inputs.password
+        password: inputs.password,
       });
-
       if (res.data.success) {
         if (type === "login") {
           localStorage.setItem("token", res.data.data);
           navigate("/");
-        }
-        else if (type === "register") {
+        } else if (type === "register") {
           navigate("/register");
         }
-
+      } else {
+        alert(res.data.message);
       }
-    }
-    catch (err) {
-      console.log(err);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleChange = (e) => {
     setInputs((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleClick = () => {
     setSignUp(!signUp);
     if (!signUp) {
-      navigate('/register');
+      navigate("/register");
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -70,21 +68,21 @@ function Login() {
   };
 
   return (
-    <div className='main3_div'>
+    <div className="main3_div">
       <form onSubmit={handleSubmit}>
         <Box
           display="flex"
           flexDirection={"column"}
           alignItems="center"
           className="Box"
-          sx={{ width: { md: "40vw", sm: '80vw' } }}
+          sx={{ width: { md: "40vw", sm: "80vw" } }}
         >
-          <Typography variant='h2'>{signUp ? "SignUp" : "Login"}</Typography>
+          <Typography variant="h2">{signUp ? "SignUp" : "Login"}</Typography>
           {signUp && (
             <TextField
               value={inputs.name}
               className="text"
-              placeholder='Name'
+              placeholder="Name"
               margin="normal"
               name="name"
               onChange={handleChange}
@@ -92,7 +90,7 @@ function Login() {
           )}
           <TextField
             className="text"
-            placeholder='Email'
+            placeholder="Email"
             margin="normal"
             value={inputs.email}
             name="email"
@@ -100,7 +98,7 @@ function Login() {
           />
           <TextField
             className="text"
-            placeholder='Password'
+            placeholder="Password"
             margin="normal"
             value={inputs.password}
             name="password"
