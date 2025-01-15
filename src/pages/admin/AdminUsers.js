@@ -76,11 +76,21 @@ function AdminUsers() {
 
   return (
     <Box>
-      <Box sx={{ marginBottom: 3 }}>
-        <PageTitle
-          title="Users"
-          sx={{ fontSize: "1.5rem", fontWeight: "bold" }}
-        />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "15px 20px",
+          backgroundColor: "rgb(101,101,101,0.1)",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          marginTop: "30px",
+        }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "darkblue" }}>
+          User Management
+        </Typography>
       </Box>
       <Box>
         <TableContainer component={Paper}>
@@ -96,6 +106,9 @@ function AdminUsers() {
                   Email
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                  Status
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   Role
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: "bold" }}>
@@ -109,6 +122,9 @@ function AdminUsers() {
                   <TableRow key={user._id}>
                     <TableCell align="center">{user.name}</TableCell>
                     <TableCell align="center">{user.email}</TableCell>
+                    <TableCell align="center">
+                      {user.isBlocked ? "Blocked" : "Active"}
+                    </TableCell>
                     <TableCell align="center">
                       {user.isAdmin ? "Admin" : "User"}
                     </TableCell>

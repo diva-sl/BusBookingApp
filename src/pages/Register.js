@@ -1,21 +1,17 @@
-import { TextField, Typography, Button } from "@mui/material";
-import { Box } from "@mui/system";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import React, { useEffect, useState } from "react";
-import "./login.css";
-import "./global.css";
+import { TextField, Typography, Button, Box, Paper } from "@mui/material";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./global.css";
 
 function Register() {
   const navigate = useNavigate();
-
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
     password: "",
   });
-  const [signUp, setSignUp] = useState(true); // Initially set to SignUp mode
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -23,25 +19,22 @@ function Register() {
     }
   }, [navigate]);
 
-  const request = async (type, values) => {
+  const request = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:5000/users/${type}`,
-        values
-      );
-      const data = res.data;
+      const res = await axios.post(`http://localhost:5000/users/register`, {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+      });
 
-      if (data.success) {
-        if (type === "login") {
-          localStorage.setItem("token", data.data);
-          navigate("/");
-        } else if (type === "register") {
-          alert("Registration successful! Please login.");
-          setSignUp(false);
-        }
+      if (res.data.success) {
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      } else {
+        alert(res.data.message);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -54,69 +47,84 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (signUp) {
-      request("register", inputs);
-    } else {
-      request("login", inputs);
-    }
-  };
-
-  const handleToggleMode = () => {
-    setSignUp(!signUp);
-    if (!signUp) {
-      navigate("/register");
-    } else {
-      navigate("/login");
-    }
+    request();
   };
 
   return (
-    <div className="main3_div">
-      <form onSubmit={handleSubmit}>
-        <Box
-          display="flex"
-          flexDirection={"column"}
-          alignItems="center"
-          className="Box"
-          sx={{ width: { md: "40vw", sm: "80vw" } }}
-        >
-          <Typography variant="h2">{signUp ? "Register" : "Login"}</Typography>
-          {signUp && (
-            <TextField
-              value={inputs.name}
-              className="text"
-              placeholder="Name"
-              margin="normal"
-              name="name"
-              onChange={handleChange}
-            />
-          )}
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#f5f5f5"
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 4,
+          borderRadius: 2,
+          width: "100%",
+          maxWidth: 400,
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Register
+        </Typography>
+        <form onSubmit={handleSubmit}>
           <TextField
-            className="text"
-            placeholder="Email"
+            fullWidth
+            label="Name"
             margin="normal"
-            value={inputs.email}
-            name="email"
+            name="name"
+            value={inputs.name}
             onChange={handleChange}
+            variant="outlined"
           />
           <TextField
-            className="text"
-            placeholder="Password"
-            value={inputs.password}
+            fullWidth
+            label="Email"
+            margin="normal"
+            name="email"
+            value={inputs.email}
+            onChange={handleChange}
+            variant="outlined"
+            type="email"
+          />
+          <TextField
+            fullWidth
+            label="Password"
             margin="normal"
             name="password"
-            type="password"
+            value={inputs.password}
             onChange={handleChange}
+            variant="outlined"
+            type="password"
           />
-          <Button variant="contained" type="submit" endIcon={<VpnKeyIcon />}>
-            {signUp ? "Sign Up" : "Login"}
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            type="submit"
+            endIcon={<VpnKeyIcon />}
+            sx={{
+              marginTop: 2,
+              paddingY: 1.5,
+              borderRadius: 2,
+            }}
+          >
+            Register
           </Button>
-          <Button onClick={handleToggleMode}>
-            Change to {signUp ? "Login" : "SignUp"}
+          <Button
+            fullWidth
+            color="secondary"
+            onClick={() => navigate("/login")}
+            sx={{ marginTop: 1, textTransform: "none" }}
+          >
+            Already have an account? Login
           </Button>
-        </Box>
-      </form>
-    </div>
+        </form>
+      </Paper>
+    </Box>
   );
 }
 

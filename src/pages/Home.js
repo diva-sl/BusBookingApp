@@ -51,10 +51,12 @@ function Home() {
   useEffect(() => {
     getBuses();
   }, []);
+
   const handleClearFilters = () => {
     setFilters({ from: "", to: "", journeyDate: "" });
     getBuses();
   };
+
   return (
     <Container
       sx={{
@@ -62,18 +64,28 @@ function Home() {
         maxHeight: "calc(80vh - 20px)",
         overflowY: "auto",
         padding: 2,
+        backgroundColor: "#f5f5f5",
+        borderRadius: 2,
       }}
     >
       <Paper
-        elevation={2}
+        elevation={3}
         sx={{
           padding: 2,
           marginBottom: 4,
           borderRadius: 2,
-          backgroundColor: "#f9f9f9",
+          backgroundColor: "#ffffff",
         }}
       >
-        <Typography variant="h6" sx={{ marginBottom: 2, textAlign: "center" }}>
+        <Typography
+          variant="h6"
+          sx={{
+            marginBottom: 2,
+            textAlign: "center",
+            color: "#3a47d5",
+            fontWeight: "bold",
+          }}
+        >
           Find Your Bus
         </Typography>
         <Grid container spacing={2} alignItems="center">
@@ -86,6 +98,9 @@ function Home() {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, from: e.target.value }))
               }
+              sx={{
+                backgroundColor: "#fff",
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -97,6 +112,9 @@ function Home() {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, to: e.target.value }))
               }
+              sx={{
+                backgroundColor: "#fff",
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -113,6 +131,9 @@ function Home() {
                   journeyDate: e.target.value,
                 }))
               }
+              sx={{
+                backgroundColor: "#fff",
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -128,6 +149,10 @@ function Home() {
                 color="primary"
                 onClick={getBuses}
                 fullWidth
+                sx={{
+                  borderRadius: "5px",
+                  fontWeight: "bold",
+                }}
               >
                 Filter
               </Button>
@@ -136,6 +161,10 @@ function Home() {
                 color="secondary"
                 onClick={handleClearFilters}
                 fullWidth
+                sx={{
+                  borderRadius: "5px",
+                  fontWeight: "bold",
+                }}
               >
                 Clear
               </Button>
@@ -157,7 +186,12 @@ function Home() {
             <Typography
               variant="body1"
               color="textSecondary"
-              sx={{ textAlign: "center", width: "100%", mt: 2 }}
+              sx={{
+                textAlign: "center",
+                width: "100%",
+                mt: 2,
+                color: "#3a47d5",
+              }}
             >
               No buses available. Please modify your search criteria.
             </Typography>

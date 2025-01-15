@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import { useSelector } from "react-redux";
 import {
@@ -13,27 +13,27 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 function DefaultLayout({ children }) {
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState(
+    () => JSON.parse(localStorage.getItem("menuState")) || false
+  );
   const { user } = useSelector((state) => state.users);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem("menuState", JSON.stringify(menu));
+  }, [menu]);
 
   const toggleMenu = () => setMenu((prevMenu) => !prevMenu);
 
   const handleLogout = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      localStorage.removeItem("token");
-      navigate("/login");
-    } else {
-      alert("You are not logged in!");
-    }
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const userMenu = [
     { name: "Home", icon: <HomeIcon />, path: "/" },
     { name: "Booking", icon: <BookIcon />, path: "/bookings" },
-    { name: "Profile", icon: <AccountBoxIcon />, path: "/" },
-    { name: "Logout", icon: <LogoutIcon />, action: handleLogout },
+    { name: "Profile", icon: <AccountBoxIcon />, path: "/profile" },
   ];
 
   const adminMenu = [
@@ -41,7 +41,6 @@ function DefaultLayout({ children }) {
     { name: "Buses", icon: <DirectionsBusIcon />, path: "/admin/buses" },
     { name: "Users", icon: <AccountBoxIcon />, path: "/admin/users" },
     { name: "Booking", icon: <BookIcon />, path: "/admin/booking" },
-    { name: "Logout", icon: <LogoutIcon />, action: handleLogout },
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
@@ -49,169 +48,154 @@ function DefaultLayout({ children }) {
   return (
     <Box
       sx={{
-        display: "grid",
-        gridTemplateColumns: {
-          md: menu ? "280px auto" : "200px auto",
-          xs: "100%",
-        },
+        display: "flex",
         height: "100vh",
-        transition: "grid-template-columns 0.3s ease",
+        backgroundColor: "#f5f5f5",
+        transition: "0.3s",
       }}
     >
       <Box
         sx={{
-          background:
-            "linear-gradient(to bottom, rgba(65, 105, 225, 0.84), rgba(72, 118, 255, 0.92), rgba(70, 130, 255, 1))",
-          height: "100%",
+          width: menu ? "250px" : "170px",
+          background: "linear-gradient(to bottom, #3a47d5, #567af0)",
+          transition: "0.3s",
+          color: "white",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
+          overflow: "hidden",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "15px",
-            padding: "20px",
-            color: "#black",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "16px",
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: "24px" }}>VOUGHT BUS</h2>
+        <Box>
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: "max-content auto",
-              columnGap: "10px",
-              rowGap: "10px",
-              alignItems: "center",
+              padding: "20px",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "20px",
+              whiteSpace: "nowrap",
             }}
           >
-            <Box sx={{ fontWeight: "bold" }}>
-              Name<span style={{ marginLeft: "5px" }}>:</span>
-            </Box>
-            <Box>{user?.name || "Guest"}</Box>
-            <Box sx={{ fontWeight: "bold" }}>
-              Role<span style={{ marginLeft: "15px" }}>:</span>
-            </Box>
-            <Box>{user?.isAdmin ? "Admin" : "Guest"}</Box>
+            VOUGHT BUS
           </Box>
-        </Box>
-        {menuToBeRendered.map((item) => (
           <Box
-            key={item.name}
             sx={{
-              height: "50px",
               display: "flex",
-              alignItems: "center",
+              flexDirection: "column",
+              alignItems: "left",
               justifyContent: "center",
+              padding: "20px 10px",
               gap: "15px",
-              padding: "10px 15px",
-              color: "white",
-              borderBottom: "1px solid white",
+              whiteSpace: "nowrap",
+              color: "#fff",
             }}
-            onClick={item.action || null}
           >
-            {item.path ? (
-              <Link
-                to={item.path}
-                style={{ textDecoration: "none", color: "white" }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                    gap: "15px",
-                    fontSize: "18px",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "start",
-                      width: "30px",
-                      height: "30px",
-                    }}
-                  >
-                    {item.icon}
-                  </Box>
-                  {menu && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "start",
-                        fontWeight: "400",
-                      }}
-                    >
-                      {item.name}
-                    </Box>
-                  )}
-                </Box>
-              </Link>
-            ) : (
+            <Box
+              sx={{
+                fontWeight: "bold",
+                fontSize: "18px",
+              }}
+            >
+              User: {user?.name || "Guest"}
+            </Box>
+            <Box
+              sx={{
+                fontSize: "16px",
+                fontStyle: "italic",
+              }}
+            >
+              Role: {user?.isAdmin ? "Admin" : "User"}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              padding: "10px",
+            }}
+          >
+            {menuToBeRendered.map((item, index) => (
               <Box
+                key={index}
+                onClick={item.action || null}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "start",
-                  gap: "15px",
-                  fontSize: "18px",
+                  gap: "10px",
+                  padding: "10px",
                   cursor: "pointer",
+                  borderRadius: "5px",
+                  "&:hover": {
+                    backgroundColor: "#ffffff33",
+                  },
                 }}
               >
-                <Box
-                  sx={{
+                <Link
+                  to={item.path}
+                  style={{
+                    textDecoration: "none",
+                    color: "white",
                     display: "flex",
-                    alignItems: "start",
-                    width: "30px",
-                    height: "30px",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
                 >
-                  {item.icon}
-                </Box>
-                {menu && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "start",
-                      fontWeight: "400",
-                    }}
-                  >
-                    {item.name}
-                  </Box>
-                )}
+                  <Box sx={{ fontSize: "20px" }}>{item.icon}</Box>
+                  {menu && <Box>{item.name}</Box>}
+                </Link>
               </Box>
-            )}
+            ))}
           </Box>
-        ))}
+        </Box>
+        <Box sx={{ padding: "10px", textAlign: "center", fontSize: "12px" }}>
+          © 2025 Vought Bus
+        </Box>
       </Box>
       <Box
         sx={{
-          padding: "1vw",
+          flex: 1,
+          padding: "20px",
+          overflow: "auto",
         }}
       >
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
-            height: "50px",
-            border: "2px solid grey",
-            boxShadow: 2,
-            borderRadius: 2,
-            padding: "10px",
-            cursor: "pointer",
+            alignItems: "center",
+            marginBottom: "20px",
+            background: "white",
+            borderRadius: "5px",
+            padding: "10px 20px",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
           }}
         >
-          {menu ? (
-            <CloseIcon sx={{ fontSize: "30px" }} onClick={toggleMenu} />
-          ) : (
-            <MenuIcon sx={{ fontSize: "30px" }} onClick={toggleMenu} />
-          )}
+          <Box onClick={toggleMenu} sx={{ cursor: "pointer" }}>
+            {menu ? (
+              <CloseIcon sx={{ fontSize: "30px" }} />
+            ) : (
+              <MenuIcon sx={{ fontSize: "30px" }} />
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            <Box>Welcome, {user?.name || "Guest"}</Box>
+            <Box
+              onClick={handleLogout}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                cursor: "pointer",
+                color: "#3a47d5",
+                "&:hover": { color: "#567af0" },
+              }}
+            >
+              <LogoutIcon sx={{ fontSize: "20px" }} />
+              Logout
+            </Box>
+          </Box>
         </Box>
         {children}
       </Box>

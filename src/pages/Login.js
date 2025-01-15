@@ -1,17 +1,13 @@
-import { TextField, Typography, Button } from "@mui/material";
-import { Box } from "@mui/system";
-import LoginIcon from "@mui/icons-material/Login";
 import React, { useEffect, useState } from "react";
-import "./login.css";
+import { TextField, Typography, Button, Box, Paper } from "@mui/material";
+import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./global.css";
 
 function Login() {
   const navigate = useNavigate();
-  const [inputs, setInputs] = useState({
-    email: "",
-    password: "",
-  });
+  const [inputs, setInputs] = useState({ email: "", password: "" });
   const [signUp, setSignUp] = useState(false);
 
   useEffect(() => {
@@ -43,10 +39,7 @@ function Login() {
   };
 
   const handleChange = (e) => {
-    setInputs((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleClick = () => {
@@ -68,51 +61,75 @@ function Login() {
   };
 
   return (
-    <div className="main3_div">
-      <form onSubmit={handleSubmit}>
-        <Box
-          display="flex"
-          flexDirection={"column"}
-          alignItems="center"
-          className="Box"
-          sx={{ width: { md: "40vw", sm: "80vw" } }}
-        >
-          <Typography variant="h2">{signUp ? "SignUp" : "Login"}</Typography>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#f5f5f5"
+    >
+      <Paper
+        elevation={3}
+        sx={{ padding: 4, borderRadius: 2, width: "100%", maxWidth: 400 }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          {signUp ? "Sign Up" : "Login"}
+        </Typography>
+        <form onSubmit={handleSubmit}>
           {signUp && (
             <TextField
-              value={inputs.name}
-              className="text"
-              placeholder="Name"
+              fullWidth
+              label="Name"
               margin="normal"
               name="name"
+              value={inputs.name}
               onChange={handleChange}
+              variant="outlined"
             />
           )}
           <TextField
-            className="text"
-            placeholder="Email"
+            fullWidth
+            label="Email"
             margin="normal"
-            value={inputs.email}
             name="email"
+            value={inputs.email}
             onChange={handleChange}
+            variant="outlined"
+            type="email"
           />
           <TextField
-            className="text"
-            placeholder="Password"
+            fullWidth
+            label="Password"
             margin="normal"
-            value={inputs.password}
             name="password"
+            value={inputs.password}
             onChange={handleChange}
+            variant="outlined"
+            type="password"
           />
-          <Button variant="contained" type="submit" endIcon={<LoginIcon />}>
-            {signUp ? "SignUp" : "Login"}
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            type="submit"
+            endIcon={<LoginIcon />}
+            sx={{ marginTop: 2, paddingY: 1.5, borderRadius: 2 }}
+          >
+            {signUp ? "Sign Up" : "Login"}
           </Button>
-          <Button onClick={handleClick} color="secondary">
-            Change to {signUp ? "Login" : "SignUp"}
+          <Button
+            fullWidth
+            color="secondary"
+            onClick={handleClick}
+            sx={{ marginTop: 1, textTransform: "none" }}
+          >
+            {signUp
+              ? "Already have an account? Login"
+              : "Don't have an account? Sign Up"}
           </Button>
-        </Box>
-      </form>
-    </div>
+        </form>
+      </Paper>
+    </Box>
   );
 }
 

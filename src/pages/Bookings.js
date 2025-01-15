@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -10,13 +10,13 @@ import {
   Paper,
   Typography,
   IconButton,
-  Divider,
   Button,
+  Divider,
+  Tooltip,
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Modal } from "antd";
-import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import PageTitle from "../components/PageTitle";
 
@@ -48,17 +48,79 @@ function Bookings() {
     getBookings();
   }, []);
 
-  const componentRef = useRef();
-
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    // onAfterPrint: () => console.log("Printing completed."),
-    // onPrintError: (error) => console.error("Error during printing:", error),
-  });
+  // Function to print the ticket using a simple print window approach
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank", "width=600,height=600");
+    const printContent = `
+      <html>
+        <head>
+          <title>Ticket Print</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              background-color: #f4f4f4;
+            }
+            h2 {
+              color: darkblue;
+            }
+            .ticket-info {
+              margin-top: 20px;
+              background-color: #fff;
+              padding: 15px;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .ticket-info strong {
+              font-weight: bold;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>${selectedTicket?.bus?.name}</h2>
+          <p><strong>From:</strong> ${selectedTicket?.bus?.from} - ${
+      selectedTicket?.bus?.to
+    }</p>
+          <p><strong>Journey Date:</strong> ${
+            selectedTicket?.bus?.journeyDate
+          }</p>
+          <p><strong>Journey Time:</strong> ${
+            selectedTicket?.bus?.departure
+          }</p>
+          <p><strong>Arrival Time:</strong> ${selectedTicket?.bus?.arrival}</p>
+          <p><strong>Seat Numbers:</strong> ${selectedTicket?.seats?.join(
+            ", "
+          )}</p>
+          <p><strong>Total Amount:</strong> ₹${
+            selectedTicket?.bus?.fare * selectedTicket?.seats.length
+          }</p>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
 
   return (
     <Box sx={{ padding: 2 }}>
-      <PageTitle title="Bookings" />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "15px 20px",
+          backgroundColor: "rgb(101,101,101,0.1)",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          marginTop: "30px",
+        }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "darkblue" }}>
+          Bookings
+        </Typography>
+      </Box>
+
       <TableContainer component={Paper} sx={{ marginTop: 2 }}>
         <Table sx={{ minWidth: 650 }} size="small">
           <TableHead>
@@ -95,19 +157,21 @@ function Bookings() {
                     {booking.seats.join(", ")}
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={() => {
-                        setSelectedTicket(booking);
-                        setShowPrintModal(true);
-                      }}
-                    >
-                      <VisibilityIcon
-                        sx={{
-                          color: "#6c757d",
-                          "&:hover": { color: "#007bff" },
+                    <Tooltip title="View Ticket" arrow>
+                      <IconButton
+                        onClick={() => {
+                          setSelectedTicket(booking);
+                          setShowPrintModal(true);
                         }}
-                      />
-                    </IconButton>
+                      >
+                        <VisibilityIcon
+                          sx={{
+                            color: "#6c757d",
+                            "&:hover": { color: "#007bff" },
+                          }}
+                        />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
@@ -123,6 +187,7 @@ function Bookings() {
           </TableBody>
         </Table>
       </TableContainer>
+
       {showPrintModal && (
         <Modal
           title={<Typography variant="h6">Print Ticket</Typography>}
@@ -131,68 +196,60 @@ function Bookings() {
             setSelectedTicket(null);
           }}
           open={showPrintModal}
-          onOk={handlePrint}
-          // footer={null}
-          // afterClose={() => setSelectedTicket(null)} // Reset selected ticket after modal closes
+          footer={null}
         >
-          <div className="d-flex" ref={componentRef} sx={{ padding: 2 }}>
-            <>
-              <Typography variant="h6" gutterBottom>
-                {selectedTicket.bus.name}
-              </Typography>
-              <Typography variant="body1" color="textSecondary" gutterBottom>
-                {selectedTicket.bus.from} - {selectedTicket.bus.to}
-              </Typography>
-              <Divider sx={{ marginY: 2 }} />
-              <Typography variant="body2" gutterBottom>
-                <strong>Journey Date:</strong> {selectedTicket.bus.journeyDate}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Journey Time:</strong> {selectedTicket.bus.departure}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Arrival Time:</strong> {selectedTicket.bus.arrival}
-              </Typography>
-              <Divider sx={{ marginY: 2 }} />
-              <Typography variant="body2" gutterBottom>
-                <strong>Seat Numbers:</strong> {selectedTicket.seats.join(", ")}
-              </Typography>
-              <Divider sx={{ marginY: 2 }} />
-              <Typography variant="h6" color="textSecondary">
-                Total Amount: ₹
-                {selectedTicket.bus.fare * selectedTicket.seats.length} -/
-              </Typography>
-            </>
+          <Box sx={{ padding: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              {selectedTicket?.bus?.name}
+            </Typography>
+            <Typography variant="body1" color="textSecondary" gutterBottom>
+              {selectedTicket?.bus?.from} - {selectedTicket?.bus?.to}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="body2" gutterBottom>
+              <strong>Journey Date:</strong> {selectedTicket?.bus?.journeyDate}
+            </Typography>
+            <Typography variant="body2" gutterBottom>
+              <strong>Journey Time:</strong> {selectedTicket?.bus?.departure}
+            </Typography>
+            <Typography variant="body2" gutterBottom>
+              <strong>Arrival Time:</strong> {selectedTicket?.bus?.arrival}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="body2" gutterBottom>
+              <strong>Seat Numbers:</strong> {selectedTicket?.seats?.join(", ")}
+            </Typography>
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="h6" color="textSecondary">
+              Total Amount: ₹
+              {selectedTicket?.bus?.fare * selectedTicket?.seats.length} -/
+            </Typography>
 
-            {/* <Typography variant="body2" color="textSecondary">
-                No ticket selected.
-              </Typography> */}
-
-            {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 2,
-              marginTop: 3,
-            }}
-          >
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => {
-                setShowPrintModal(false);
-                setSelectedTicket(null);
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                marginTop: 3,
               }}
             >
-              Cancel
-            </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  setShowPrintModal(false);
+                  setSelectedTicket(null);
+                }}
+              >
+                Cancel
+              </Button>
 
-            <Button variant="contained" color="primary" onClick={handlePrint}>
-              <PrintIcon sx={{ marginRight: 1 }} />
-              Print
-            </Button>
-          </Box> */}
-          </div>
+              <Button variant="contained" color="primary" onClick={handlePrint}>
+                <PrintIcon sx={{ marginRight: 1 }} />
+                Print
+              </Button>
+            </Box>
+          </Box>
         </Modal>
       )}
     </Box>
