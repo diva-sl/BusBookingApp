@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import AdminBuses from "./pages/admin/AdminBuses";
 import AdminHome from "./pages/admin/AdminHome";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminBookinngs from "./pages/admin/AdminBookings";
 import BookNow from "./pages/BookNow";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -44,6 +45,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute>
+              <AdminBookinngs />
             </ProtectedRoute>
           }
         />

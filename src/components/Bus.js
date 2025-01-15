@@ -16,6 +16,7 @@ function Bus({ bus }) {
         "&:hover": {
           transform: "scale(1.05)",
         },
+        backgroundColor: "#f9f9f9",
       }}
     >
       <CardContent sx={{ flexGrow: 1 }}>
@@ -24,7 +25,10 @@ function Bus({ bus }) {
           sx={{
             fontWeight: "bold",
             mb: 2,
-            color: "#333",
+            color: "#fff",
+            backgroundColor: "#4169E1",
+            padding: "5px 10px",
+            borderRadius: "5px",
             textTransform: "capitalize",
           }}
         >

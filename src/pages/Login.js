@@ -66,14 +66,34 @@ function Login() {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      bgcolor="#f5f5f5"
+      sx={{
+        background: "linear-gradient(to right, #6a11cb, #2575fc)",
+        animation: "backgroundAnimation 6s ease-in-out infinite",
+        backgroundSize: "200% 200%",
+      }}
+      padding={2}
     >
       <Paper
-        elevation={3}
-        sx={{ padding: 4, borderRadius: 2, width: "100%", maxWidth: 400 }}
+        elevation={5}
+        sx={{
+          padding: 4,
+          borderRadius: 2,
+          width: "100%",
+          maxWidth: 450,
+          boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
+        }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
-          {signUp ? "Sign Up" : "Login"}
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            color: "#003366",
+            fontFamily: "Roboto, sans-serif",
+          }}
+        >
+          Vought Bus - {signUp ? "Sign Up" : "Login"}
         </Typography>
         <form onSubmit={handleSubmit}>
           {signUp && (
@@ -85,6 +105,11 @@ function Login() {
               value={inputs.name}
               onChange={handleChange}
               variant="outlined"
+              sx={{
+                marginBottom: 2,
+                backgroundColor: "#f9f9f9",
+                borderRadius: 1,
+              }}
             />
           )}
           <TextField
@@ -96,6 +121,11 @@ function Login() {
             onChange={handleChange}
             variant="outlined"
             type="email"
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "#f9f9f9",
+              borderRadius: 1,
+            }}
           />
           <TextField
             fullWidth
@@ -106,6 +136,11 @@ function Login() {
             onChange={handleChange}
             variant="outlined"
             type="password"
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "#f9f9f9",
+              borderRadius: 1,
+            }}
           />
           <Button
             fullWidth
@@ -113,7 +148,15 @@ function Login() {
             color="primary"
             type="submit"
             endIcon={<LoginIcon />}
-            sx={{ marginTop: 2, paddingY: 1.5, borderRadius: 2 }}
+            sx={{
+              marginTop: 2,
+              paddingY: 1.5,
+              borderRadius: 2,
+              backgroundColor: "#0066cc",
+              "&:hover": {
+                backgroundColor: "#005bb5",
+              },
+            }}
           >
             {signUp ? "Sign Up" : "Login"}
           </Button>
@@ -121,7 +164,12 @@ function Login() {
             fullWidth
             color="secondary"
             onClick={handleClick}
-            sx={{ marginTop: 1, textTransform: "none" }}
+            sx={{
+              marginTop: 1,
+              textTransform: "none",
+              color: "#003366",
+              fontWeight: "bold",
+            }}
           >
             {signUp
               ? "Already have an account? Login"

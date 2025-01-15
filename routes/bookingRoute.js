@@ -8,18 +8,31 @@ const stripe = require("stripe")(process.env.stripe_key);
 
 const { v4: uuidv4 } = require("uuid");
 
-//book a seat
+// book-seat
+
 router.post("/book-seat", authMiddleware, async (req, res) => {
   try {
+    const bus = await Bus.findById(req.body.bus);
+    if (!bus) {
+      return res.status(404).send({
+        message: "Bus not found",
+        success: false,
+      });
+    }
+
+    const amount = req.body.seats.length * bus.fare;
+
     const newBooking = new Booking({
       ...req.body,
-      // transactionId: "1234", without stripe
+      amount,
       user: req.body.userId,
     });
+
     await newBooking.save();
-    const bus = await Bus.findById(req.body.bus);
+
     bus.seatsBooked = [...bus.seatsBooked, ...req.body.seats];
     await bus.save();
+
     res.status(200).send({
       message: "Booking Successful",
       data: newBooking,
@@ -100,9 +113,9 @@ router.post("/get-bookings-by-user-id", authMiddleware, async (req, res) => {
   }
 });
 
-// get all booking
+// get all bookings
 
-router.post("/get-all-booking", authMiddleware, async (req, res) => {
+router.post("/get-all-bookings", authMiddleware, async (req, res) => {
   try {
     const bookings = await Booking.find().populate("bus").populate("user");
     res.status(200).send({

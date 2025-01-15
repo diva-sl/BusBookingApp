@@ -40,7 +40,7 @@ function DefaultLayout({ children }) {
     { name: "Home", icon: <HomeIcon />, path: "/" },
     { name: "Buses", icon: <DirectionsBusIcon />, path: "/admin/buses" },
     { name: "Users", icon: <AccountBoxIcon />, path: "/admin/users" },
-    { name: "Booking", icon: <BookIcon />, path: "/admin/booking" },
+    { name: "Booking", icon: <BookIcon />, path: "/admin/bookings" },
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
@@ -92,19 +92,17 @@ function DefaultLayout({ children }) {
           >
             <Box
               sx={{
-                fontWeight: "bold",
                 fontSize: "18px",
               }}
             >
-              User: {user?.name || "Guest"}
+              User : {user?.name || "Guest"}
             </Box>
             <Box
               sx={{
                 fontSize: "16px",
-                fontStyle: "italic",
               }}
             >
-              Role: {user?.isAdmin ? "Admin" : "User"}
+              Role : {user?.isAdmin ? "Admin" : "User"}
             </Box>
           </Box>
           <Box

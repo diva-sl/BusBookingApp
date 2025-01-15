@@ -169,7 +169,7 @@ function BookNow() {
                 amount={selectedSeats.length * bus.fare * 100}
                 currency="INR"
                 token={onToken}
-                stripeKey="pk_test_51QdPvNDXhLCwOGLx3hgVQhuhJ4F6ng6Fwu0X5AKK0NxYvYaKYlxEJs81XhYxpiidl0H5jrvouHhQzelxdIxpD4jR00NQBkOUKb"
+                stripeKey="pk_test_51QdPvNDXhLCwOGLx3r8sVmUlIMOwt5dWc2sBr516rp9lSsbRzj70R7xTQjDFr5CKRIzpj0XiJBVYEhaKWvM3GctI00ciIU549D"
               >
                 <Button
                   variant="contained"

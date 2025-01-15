@@ -69,7 +69,7 @@ function Home() {
       }}
     >
       <Paper
-        elevation={3}
+        elevation={2}
         sx={{
           padding: 2,
           marginBottom: 4,
@@ -178,7 +178,7 @@ function Home() {
             buses
               .filter((bus) => bus.status === "Yet To Start")
               .map((bus) => (
-                <Grid item xs={12} sm={6} md={4} key={bus._id}>
+                <Grid item xs={12} sm={6} md={6} key={bus._id}>
                   <Bus bus={bus} />
                 </Grid>
               ))
