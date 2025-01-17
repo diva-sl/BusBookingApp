@@ -125,7 +125,13 @@ function AdminBuses() {
         refreshBuses={getBuses}
       />
       <Box>
-        <TableContainer component={Paper}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
             <TableHead>
               <TableRow

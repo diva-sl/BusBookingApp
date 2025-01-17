@@ -41,7 +41,6 @@ function AdminBookings() {
 
   return (
     <Box>
-      {/* Page Header */}
       <Box
         sx={{
           display: "flex",
@@ -58,10 +57,14 @@ function AdminBookings() {
           Booking Management
         </Typography>
       </Box>
-
-      {/* Table Section */}
       <Box>
-        <TableContainer component={Paper}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
           <Table
             sx={{ minWidth: 650 }}
             size="small"
@@ -93,8 +96,8 @@ function AdminBookings() {
             <TableBody>
               {bookings.length > 0 ? (
                 bookings.map((booking) => (
-                  <TableRow key={booking._id}>
-                    <TableCell align="center">
+                  <TableRow key={booking._id} sx={{ height: "60px" }}>
+                    <TableCell align="center" sx={{ padding: "16px" }}>
                       {booking.user?.name || "Unknown"}
                     </TableCell>
                     <TableCell align="center">{booking.bus?.name}</TableCell>
@@ -110,7 +113,7 @@ function AdminBookings() {
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
+                <TableRow sx={{ height: "60px" }}>
                   <TableCell colSpan={7} align="center">
                     <Typography variant="body2" color="textSecondary">
                       No bookings available

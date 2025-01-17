@@ -4,11 +4,15 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware.js");
 const { message } = require("antd");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const moment = require("moment");
 
 //Register
 
 router.post("/register", async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, address } = req.body;
   let existingUser;
   try {
     existingUser = await User.findOne({ email });
@@ -24,6 +28,7 @@ router.post("/register", async (req, res, next) => {
       name,
       email,
       password: hashedPassword,
+      address: address || {},
     });
     await user.save();
     if (user) {
@@ -97,6 +102,7 @@ router.post("/login", async (req, res, next) => {
 router.post("/getuser", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
+
     res.send({
       message: "User Fetched Successfully",
       user: user,
@@ -129,25 +135,8 @@ router.post("/get-all-users", authMiddleware, async (req, res) => {
   }
 });
 
-// //get-user-by-id
-
-// router.post("/get-user-by-id", authMiddleware, async (req, res) => {
-//   try {
-//     const user = await User.findById(req.body.userId);
-//     res.send({
-//       message: "User Fetched Successfully",
-//       success: true,
-//       data: user,
-//     });
-//   } catch (error) {
-//     return res.send({
-//       message: error.message,
-//       success: false,
-//       data: null,
-//     });
-//   }
-// });
 // Update user permissions
+
 router.post("/update-user-permission", authMiddleware, async (req, res) => {
   const { selectedUserId, action } = req.body;
 
@@ -195,23 +184,102 @@ router.post("/update-user-permission", authMiddleware, async (req, res) => {
   }
 });
 
-//Update-user
+// get-profile
 
-router.post("/update-user", authMiddleware, async (req, res) => {
-  // try {
-  //   const user = await User.findById(req.body.userId);
-  //   res.send({
-  //     message: "User Fetched Successfully",
-  //     success: true,
-  //     data: user,
-  //   });
-  // } catch (error) {
-  //   return res.send({
-  //     message: error.message,
-  //     success: false,
-  //     data: null,
-  //   });
-  // }
+router.post("/get-profile", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.body.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const formattedDob = moment(user.dob).format("YYYY-MM-DD");
+
+    const { password, ...userProfile } = user.toObject();
+    userProfile.dob = formattedDob;
+
+    res.status(200).json({
+      success: true,
+      user: userProfile,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch user profile", error });
+  }
 });
+
+// Configure multer for file uploads
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true }); // Create directory if it doesn't exist
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      cb(new Error("Invalid file type. Only JPEG, PNG, and JPG are allowed."));
+    } else {
+      cb(null, true);
+    }
+  },
+});
+
+// Update user profile
+
+router.post(
+  "/update-profile",
+  upload.single("profilePicture"),
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { name, email, phone, dob, address } = req.body;
+      const updateData = {
+        name,
+        email,
+        phone,
+        dob,
+        address: address ? JSON.parse(address) : undefined,
+      };
+
+      if (req.file) {
+        updateData.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
+      }
+      const updatedUser = await User.findByIdAndUpdate(
+        req.body.userId,
+        updateData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to update profile", error });
+    }
+  }
+);
 
 module.exports = router;

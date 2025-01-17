@@ -11,6 +11,7 @@ import {
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
+import { Avatar } from "antd";
 
 function DefaultLayout({ children }) {
   const [menu, setMenu] = useState(
@@ -93,6 +94,7 @@ function DefaultLayout({ children }) {
             <Box
               sx={{
                 fontSize: "18px",
+                color: "black",
               }}
             >
               User : {user?.name || "Guest"}
@@ -100,6 +102,7 @@ function DefaultLayout({ children }) {
             <Box
               sx={{
                 fontSize: "16px",
+                color: "black",
               }}
             >
               Role : {user?.isAdmin ? "Admin" : "User"}
@@ -178,7 +181,14 @@ function DefaultLayout({ children }) {
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            <Box>Welcome, {user?.name || "Guest"}</Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Avatar
+                alt={user?.name || "Guest"}
+                src={user?.profilePicture || "/default-avatar.png"}
+                sx={{ width: 40, height: 40 }}
+              />
+              <Box>Welcome, {user?.name || "Guest"}</Box>
+            </Box>
             <Box
               onClick={handleLogout}
               sx={{
