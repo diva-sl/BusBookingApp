@@ -79,7 +79,7 @@ function UserProfile() {
       formData.append("dob", profile.dob || "");
       formData.append("address", JSON.stringify(profile.address || {}));
       formData.append("password", profile.password || "");
-      formData.append("newPassword", profile.newPassword || ""); // Append new password
+      formData.append("newPassword", profile.newPassword || "");
 
       if (profile.profilePicture) {
         formData.append("profilePicture", profile.profilePicture);
@@ -101,6 +101,11 @@ function UserProfile() {
       if (response.data.success) {
         alert("Profile updated successfully!");
         fetchProfile();
+        setProfile((prev) => ({
+          ...prev,
+          password: "",
+          newPassword: "",
+        }));
       } else {
         alert("Failed to update profile.");
       }

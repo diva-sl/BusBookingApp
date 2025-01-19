@@ -238,7 +238,9 @@ router.post("/update-user-permission", authMiddleware, async (req, res) => {
     });
   }
 });
+
 // Get Profile
+
 router.post("/get-profile", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
@@ -246,7 +248,7 @@ router.post("/get-profile", authMiddleware, async (req, res) => {
 
     const userProfile = {
       ...user.toObject(),
-      dob: moment(user.dob).format("YYYY-MM-DD"),
+      dob: user.dob ? moment(user.dob).format("YYYY-MM-DD") : "",
       profilePicture: "",
     };
 
