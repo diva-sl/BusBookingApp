@@ -1,18 +1,53 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 const User = require("../models/userModel.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware.js");
-const { message } = require("antd");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const moment = require("moment");
 
-//Register
+// Helper function to save Base64 images
+const saveBase64Image = (base64String, uploadDir) => {
+  const matches = base64String.match(/^data:(.+);base64,(.+)$/);
+  if (!matches) throw new Error("Invalid Base64 string");
+
+  const mimeType = matches[1];
+  const base64Data = matches[2];
+  const extension = mimeType.split("/")[1];
+
+  if (!["jpeg", "png", "jpg"].includes(extension)) {
+    throw new Error("Invalid file type. Only JPEG, PNG, and JPG are allowed.");
+  }
+
+  const fileName = `profile_${Date.now()}.${extension}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  fs.writeFileSync(filePath, base64Data, "base64");
+  return `/uploads/profile-pictures/${fileName}`;
+};
+
+// Helper function to delete a file
+const deleteFile = (filePath) => {
+  if (filePath && fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+};
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
+
+// Register User
 
 router.post("/register", async (req, res, next) => {
-  const { name, email, password, address } = req.body;
+  const { name, email, password } = req.body;
   let existingUser;
   try {
     existingUser = await User.findOne({ email });
@@ -28,7 +63,6 @@ router.post("/register", async (req, res, next) => {
       name,
       email,
       password: hashedPassword,
-      address: address || {},
     });
     await user.save();
     if (user) {
@@ -43,8 +77,7 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-//Login
-
+// Login User
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -98,6 +131,7 @@ router.post("/login", async (req, res, next) => {
     });
   }
 });
+//get user
 
 router.post("/getuser", authMiddleware, async (req, res) => {
   try {
@@ -183,69 +217,55 @@ router.post("/update-user-permission", authMiddleware, async (req, res) => {
     });
   }
 });
-
-// get-profile
-
+// Get Profile
 router.post("/get-profile", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const userProfile = {
+      ...user.toObject(),
+      dob: moment(user.dob).format("YYYY-MM-DD"),
+      profilePicture: "",
+    };
+
+    if (user.profilePicture) {
+      const filePath = path.join(__dirname, "..", user.profilePicture);
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+        const mimeType = path.extname(filePath).slice(1);
+        userProfile.profilePicture = `data:image/${mimeType};base64,${fileBuffer.toString(
+          "base64"
+        )}`;
+      }
     }
 
-    const formattedDob = moment(user.dob).format("YYYY-MM-DD");
-
-    const { password, ...userProfile } = user.toObject();
-    userProfile.dob = formattedDob;
-
-    res.status(200).json({
-      success: true,
-      user: userProfile,
-    });
+    res.status(200).json({ success: true, user: userProfile });
   } catch (error) {
+    console.error("Error fetching profile:", error);
     res.status(500).json({ message: "Failed to fetch user profile", error });
   }
 });
 
-// Configure multer for file uploads
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true }); // Create directory if it doesn't exist
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 2 * 1024 * 1024,
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-    if (!allowedTypes.includes(file.mimetype)) {
-      cb(new Error("Invalid file type. Only JPEG, PNG, and JPG are allowed."));
-    } else {
-      cb(null, true);
-    }
-  },
-});
-
-// Update user profile
+// Update Profile
 
 router.post(
   "/update-profile",
-  upload.single("profilePicture"),
+  upload.none(),
   authMiddleware,
   async (req, res) => {
     try {
-      const { name, email, phone, dob, address } = req.body;
+      const {
+        name,
+        email,
+        phone,
+        dob,
+        address,
+        profilePicture,
+        removeProfilePicture,
+        userId,
+      } = req.body;
+
       const updateData = {
         name,
         email,
@@ -254,20 +274,35 @@ router.post(
         address: address ? JSON.parse(address) : undefined,
       };
 
-      if (req.file) {
-        updateData.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
-      }
-      const updatedUser = await User.findByIdAndUpdate(
-        req.body.userId,
-        updateData,
-        { new: true }
-      );
-
-      if (!updatedUser) {
+      const user = await User.findById(userId);
+      if (!user) {
         return res
           .status(404)
           .json({ success: false, message: "User not found" });
       }
+
+      const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
+
+      // Handle profile picture update
+      if (profilePicture) {
+        const newFilePath = saveBase64Image(profilePicture, uploadDir);
+        if (user.profilePicture) {
+          const oldFilePath = path.join(__dirname, "..", user.profilePicture);
+          deleteFile(oldFilePath);
+        }
+        updateData.profilePicture = newFilePath;
+      } else if (removeProfilePicture === "true") {
+        if (user.profilePicture) {
+          const oldFilePath = path.join(__dirname, "..", user.profilePicture);
+          deleteFile(oldFilePath);
+        }
+        updateData.profilePicture = "";
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      });
+
       res.status(200).json({
         success: true,
         message: "Profile updated successfully",

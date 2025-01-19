@@ -28,6 +28,99 @@ function UserProfile() {
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef(null);
 
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/users/get-profile",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const fetchedProfile = response.data.user;
+        setProfile({
+          name: fetchedProfile.name || "",
+          email: fetchedProfile.email || "",
+          phone: fetchedProfile.phone || "",
+          dob: fetchedProfile.dob || "",
+          profilePicture: fetchedProfile.profilePicture || "",
+          address: {
+            doorNo: fetchedProfile.address?.doorNo || "",
+            street: fetchedProfile.address?.street || "",
+            place: fetchedProfile.address?.place || "",
+            city: fetchedProfile.address?.city || "",
+            postalCode: fetchedProfile.address?.postalCode || "",
+          },
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const handleUpdate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", profile.name || "");
+      formData.append("email", profile.email || "");
+      formData.append("phone", profile.phone || "");
+      formData.append("dob", profile.dob || "");
+      formData.append("address", JSON.stringify(profile.address || {}));
+
+      if (profile.profilePicture) {
+        formData.append("profilePicture", profile.profilePicture);
+      } else if (!profile.profilePicture) {
+        formData.append("removeProfilePicture", true);
+      }
+
+      const response = await axios.post(
+        "http://localhost:5000/users/update-profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        alert("Profile updated successfully!");
+        fetchProfile();
+      } else {
+        alert("Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      alert("An error occurred while updating the profile.");
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name.startsWith("address.")) {
+      const field = name.split(".")[1];
+      setProfile((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [field]: value,
+        },
+      }));
+    } else {
+      setProfile((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
 
@@ -76,103 +169,40 @@ function UserProfile() {
     return `hsl(${colorCode}, 70%, 50%)`;
   };
 
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/users/get-profile",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        const fetchedProfile = response.data.user;
-        setProfile({
-          name: fetchedProfile.name || "",
-          email: fetchedProfile.email || "",
-          phone: fetchedProfile.phone || "",
-          dob: fetchedProfile.dob || "",
-          profilePicture: fetchedProfile.profilePicture || "",
-          address: {
-            doorNo: fetchedProfile.address?.doorNo || "",
-            street: fetchedProfile.address?.street || "",
-            place: fetchedProfile.address?.place || "",
-            city: fetchedProfile.address?.city || "",
-            postalCode: fetchedProfile.address?.postalCode || "",
-          },
-        });
-      }
-    } catch (err) {
-      console.error("Failed to load profile:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name.startsWith("address.")) {
-      const field = name.split(".")[1];
-      setProfile((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [field]: value,
-        },
-      }));
-    } else {
-      setProfile((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("name", profile.name || "");
-      formData.append("email", profile.email || "");
-      formData.append("phone", profile.phone || "");
-      formData.append("dob", profile.dob || "");
-      formData.append("address", JSON.stringify(profile.address || {}));
-
-      if (profile.profilePicture) {
-        formData.append("profilePicture", profile.profilePicture);
-      }
-
-      const response = await axios.post(
-        "http://localhost:5000/users/update-profile",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.data.success) {
-        alert("Profile updated successfully!");
-        fetchProfile();
-      } else {
-        alert("Failed to update profile.");
-      }
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      alert("An error occurred while updating the profile.");
-    }
-  };
-
   return (
-    <Box sx={{ maxWidth: "900px", margin: "auto", padding: "20px" }}>
+    <Box
+      sx={{
+        maxWidth: "900px",
+        margin: "auto",
+        mt: 6,
+        padding: "20px",
+        backgroundColor: "#f9f9f9",
+        borderRadius: "12px",
+        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+      }}
+    >
       <Typography
         variant="h4"
         gutterBottom
-        sx={{ fontWeight: "bold", textAlign: "center", marginBottom: 4 }}
+        sx={{
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: 4,
+          marginTop: 2,
+          color: "#333",
+          position: "relative",
+          paddingBottom: "10px",
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            width: "100px",
+            height: "3px",
+            backgroundColor: "#1976d2",
+            transform: "translateX(-50%)",
+          },
+        }}
       >
         User Profile
       </Typography>
@@ -188,6 +218,7 @@ function UserProfile() {
               height: 200,
               borderRadius: "50%",
               overflow: "hidden",
+              margin: "0 auto",
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -255,6 +286,7 @@ function UserProfile() {
             onChange={handleProfilePicChange}
           />
         </Grid>
+
         <Grid item xs={12} md={8}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -299,7 +331,11 @@ function UserProfile() {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ marginTop: 3, fontWeight: "bold", color: "#555" }}
+            >
               Address
             </Typography>
             {["doorNo", "street", "place", "city", "postalCode"].map(
@@ -322,6 +358,12 @@ function UserProfile() {
                 color="primary"
                 fullWidth
                 onClick={handleUpdate}
+                sx={{
+                  marginTop: 2,
+                  padding: "10px 0",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
               >
                 Update Profile
               </Button>
