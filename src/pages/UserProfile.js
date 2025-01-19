@@ -23,8 +23,8 @@ function UserProfile() {
       city: "",
       postalCode: "",
     },
-    password: "", // Add password field
-    newPassword: "", // New password field for updates
+    password: "",
+    newPassword: "",
   });
 
   const [isHovered, setIsHovered] = useState(false);
@@ -330,7 +330,6 @@ function UserProfile() {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            {/* Password Fields */}
             <Grid item xs={12}>
               <TextField
                 label="Password"

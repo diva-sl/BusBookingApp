@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box } from "@mui/system";
+import { Box, Avatar } from "@mui/material";
 import { useSelector } from "react-redux";
 import {
   Home as HomeIcon,
@@ -11,7 +11,6 @@ import {
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar } from "antd";
 
 function DefaultLayout({ children }) {
   const [menu, setMenu] = useState(
@@ -45,7 +44,6 @@ function DefaultLayout({ children }) {
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
-
   return (
     <Box
       sx={{
@@ -184,9 +182,21 @@ function DefaultLayout({ children }) {
             <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Avatar
                 alt={user?.name || "Guest"}
-                src={user?.profilePicture || "/default-avatar.png"}
-                sx={{ width: 40, height: 40 }}
-              />
+                src={user?.profilePicture || undefined}
+                sx={{
+                  width: 40,
+                  height: 40,
+                  backgroundColor: user?.profilePicture
+                    ? "transparent"
+                    : user?.avatarColor,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "16px",
+                }}
+              >
+                {!user?.profilePicture && user?.avatarInitial}
+              </Avatar>
               <Box>Welcome, {user?.name || "Guest"}</Box>
             </Box>
             <Box

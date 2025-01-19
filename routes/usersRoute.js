@@ -78,6 +78,7 @@ router.post("/register", async (req, res, next) => {
 });
 
 // Login User
+
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -131,11 +132,31 @@ router.post("/login", async (req, res, next) => {
     });
   }
 });
+
 //get user
 
 router.post("/getuser", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+        success: false,
+        data: null,
+      });
+    }
+
+    if (user.profilePicture) {
+      const filePath = path.join(__dirname, "..", user.profilePicture);
+
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+        const mimeType = path.extname(filePath).slice(1);
+        user.profilePicture = `data:image/${mimeType};base64,${fileBuffer.toString(
+          "base64"
+        )}`;
+      }
+    }
 
     res.send({
       message: "User Fetched Successfully",
