@@ -2,11 +2,12 @@
 
 # dependencies
 /node_modules
+/uploads
 /.pnp
 .pnp.js
 .env
 .prettierrc
-/uploads
+
 # testing
 /coverage
 
