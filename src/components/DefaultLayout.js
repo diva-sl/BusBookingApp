@@ -19,7 +19,7 @@ function DefaultLayout({ children }) {
   );
   const { user } = useSelector((state) => state.users);
   const navigate = useNavigate();
-
+  console.log(user);
   useEffect(() => {
     localStorage.setItem("menuState", JSON.stringify(menu));
   }, [menu]);

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -14,7 +15,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
+      minlength: 15,
     },
     isAdmin: {
       type: Boolean,
@@ -59,6 +60,16 @@ const userSchema = new mongoose.Schema(
     profilePicture: {
       type: String,
       default: "",
+    },
+    avatarColor: {
+      type: String,
+      default: () => `#${crypto.randomBytes(3).toString("hex")}`,
+    },
+    avatarInitial: {
+      type: String,
+      default: function () {
+        return this.name.charAt(0).toUpperCase();
+      },
     },
   },
   {

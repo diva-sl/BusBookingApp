@@ -248,7 +248,6 @@ router.post("/get-profile", authMiddleware, async (req, res) => {
 });
 
 // Update Profile
-
 router.post(
   "/update-profile",
   upload.none(),
@@ -264,6 +263,8 @@ router.post(
         profilePicture,
         removeProfilePicture,
         userId,
+        password,
+        newPassword,
       } = req.body;
 
       const updateData = {
@@ -281,9 +282,26 @@ router.post(
           .json({ success: false, message: "User not found" });
       }
 
+      if (newPassword) {
+        if (!password) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Current password is required" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Incorrect current password" });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        updateData.password = hashedNewPassword;
+      }
+
       const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
 
-      // Handle profile picture update
       if (profilePicture) {
         const newFilePath = saveBase64Image(profilePicture, uploadDir);
         if (user.profilePicture) {

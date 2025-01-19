@@ -23,6 +23,8 @@ function UserProfile() {
       city: "",
       postalCode: "",
     },
+    password: "", // Add password field
+    newPassword: "", // New password field for updates
   });
 
   const [isHovered, setIsHovered] = useState(false);
@@ -48,6 +50,8 @@ function UserProfile() {
           phone: fetchedProfile.phone || "",
           dob: fetchedProfile.dob || "",
           profilePicture: fetchedProfile.profilePicture || "",
+          avatarColor: fetchedProfile.avatarColor || "",
+          avatarInitial: fetchedProfile.avatarInitial || "",
           address: {
             doorNo: fetchedProfile.address?.doorNo || "",
             street: fetchedProfile.address?.street || "",
@@ -74,6 +78,8 @@ function UserProfile() {
       formData.append("phone", profile.phone || "");
       formData.append("dob", profile.dob || "");
       formData.append("address", JSON.stringify(profile.address || {}));
+      formData.append("password", profile.password || "");
+      formData.append("newPassword", profile.newPassword || ""); // Append new password
 
       if (profile.profilePicture) {
         formData.append("profilePicture", profile.profilePicture);
@@ -162,13 +168,6 @@ function UserProfile() {
     }
   };
 
-  const getInitials = (name) => name?.charAt(0).toUpperCase();
-
-  const getColorFromName = (name) => {
-    const colorCode = name?.charCodeAt(0) % 256;
-    return `hsl(${colorCode}, 70%, 50%)`;
-  };
-
   return (
     <Box
       sx={{
@@ -231,14 +230,14 @@ function UserProfile() {
                 height: "100%",
                 backgroundColor: profile.profilePicture
                   ? "transparent"
-                  : getColorFromName(profile.name),
+                  : profile.avatarColor,
                 fontSize: "60px",
                 color: "#fff",
                 transition: "0.3s ease-in-out",
               }}
               onClick={handleAvatarClick}
             >
-              {!profile.profilePicture && getInitials(profile.name)}
+              {!profile.profilePicture && profile.avatarInitial}
             </Avatar>
 
             {isHovered && (
@@ -329,6 +328,29 @@ function UserProfile() {
                 value={profile.dob}
                 onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            {/* Password Fields */}
+            <Grid item xs={12}>
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                name="password"
+                value={profile.password}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="New Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                name="newPassword"
+                value={profile.newPassword}
+                onChange={handleChange}
               />
             </Grid>
             <Typography
