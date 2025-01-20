@@ -7,6 +7,7 @@ import {
   Button,
   Grid,
   Avatar,
+  Link,
 } from "@mui/material";
 
 function UserProfile() {
@@ -193,7 +194,7 @@ function UserProfile() {
           textAlign: "center",
           marginBottom: 4,
           marginTop: 2,
-          color: "#333",
+          color: "darkblue",
           position: "relative",
           paddingBottom: "10px",
           "&::after": {
@@ -208,7 +209,7 @@ function UserProfile() {
           },
         }}
       >
-        User Profile
+        PROFILE
       </Typography>
 
       <Grid container spacing={3}>
@@ -345,7 +346,21 @@ function UserProfile() {
                 value={profile.password}
                 onChange={handleChange}
               />
+              <Box textAlign="right" mb={1} mt={1}>
+                <Link
+                  href="/password-reset"
+                  underline="hover"
+                  sx={{
+                    color: "#0066cc",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Forgot Password?
+                </Link>
+              </Box>
             </Grid>
+
             <Grid item xs={12}>
               <TextField
                 label="New Password"

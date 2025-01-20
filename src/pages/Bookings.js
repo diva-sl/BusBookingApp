@@ -145,10 +145,25 @@ function Bookings() {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-        Bookings
-      </Typography>
-
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "15px 20px",
+          backgroundColor: "rgb(101,101,101,0.1)",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          marginTop: "30px",
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: "bold", marginBottom: 2, color: "darkblue" }}
+        >
+          Bookings
+        </Typography>
+      </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
