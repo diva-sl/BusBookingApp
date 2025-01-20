@@ -10,6 +10,7 @@ import AdminBookinngs from "./pages/admin/AdminBookings";
 import BookNow from "./pages/BookNow";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 import Bookings from "./pages/Bookings";
 import UserProfile from "./pages/UserProfile";
 import AdminProfile from "./pages/admin/AdminProfile";
@@ -117,6 +118,14 @@ function App() {
             element={
               <PublicRoute>
                 <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/password-reset"
+            element={
+              <PublicRoute>
+                <ResetPassword />
               </PublicRoute>
             }
           />

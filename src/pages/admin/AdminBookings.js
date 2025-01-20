@@ -82,6 +82,7 @@ function AdminBookings() {
                   "Journey Date",
                   "Seats",
                   "Total Fare",
+                  "Status",
                 ].map((header) => (
                   <TableCell
                     key={header}
@@ -110,11 +111,29 @@ function AdminBookings() {
                       {booking.seats?.join(", ")}
                     </TableCell>
                     <TableCell align="center">₹{booking.amount}</TableCell>
+                    <TableCell align="center">
+                      <Tooltip title={`Booking is ${booking.status}`} arrow>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: "bold",
+                            color:
+                              booking.status === "canceled"
+                                ? "red"
+                                : booking.status === "booked"
+                                ? "green"
+                                : "orange",
+                          }}
+                        >
+                          {booking.status.toUpperCase()}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow sx={{ height: "60px" }}>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={8} align="center">
                     <Typography variant="body2" color="textSecondary">
                       No bookings available
                     </Typography>

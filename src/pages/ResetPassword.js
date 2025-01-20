@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { TextField, Typography, Button, Box, Paper, Link } from "@mui/material";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import React, { useState } from "react";
+import { TextField, Typography, Button, Box, Paper } from "@mui/material";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./global.css";
 
-function Login() {
+function ResetPassword() {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     email: "",
-    password: "",
+    newPassword: "",
+    reEnterPassword: "",
   });
   const [errors, setErrors] = useState({
     email: "",
-    password: "",
+    newPassword: "",
+    reEnterPassword: "",
   });
-
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/");
-    }
-  }, [navigate]);
 
   const validateFields = () => {
     let isValid = true;
     const newErrors = {
       email: "",
-      password: "",
+      newPassword: "",
+      reEnterPassword: "",
     };
 
     if (!inputs.email.trim()) {
@@ -37,8 +34,16 @@ function Login() {
       isValid = false;
     }
 
-    if (!inputs.password.trim()) {
-      newErrors.password = "Password is required";
+    if (!inputs.newPassword.trim()) {
+      newErrors.newPassword = "New password is required";
+      isValid = false;
+    } else if (inputs.newPassword.length < 6) {
+      newErrors.newPassword = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    if (inputs.newPassword !== inputs.reEnterPassword) {
+      newErrors.reEnterPassword = "Passwords do not match";
       isValid = false;
     }
 
@@ -48,13 +53,17 @@ function Login() {
 
   const request = async () => {
     try {
-      const res = await axios.post(`http://localhost:5000/users/login`, {
-        email: inputs.email,
-        password: inputs.password,
-      });
+      const res = await axios.post(
+        `http://localhost:5000/users/reset-password`,
+        {
+          email: inputs.email,
+          password: inputs.newPassword,
+        }
+      );
+
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        navigate("/");
+        alert("Password reset successful! Please login.");
+        navigate("/login");
       } else {
         alert(res.data.message);
       }
@@ -114,7 +123,7 @@ function Login() {
             fontFamily: "Roboto, sans-serif",
           }}
         >
-          Vought Bus - Login
+          Vought Bus - Reset Password
         </Typography>
 
         <form onSubmit={handleSubmit}>
@@ -137,40 +146,44 @@ function Login() {
           />
           <TextField
             fullWidth
-            label="Password"
+            label="New Password"
             margin="normal"
-            name="password"
-            value={inputs.password}
+            name="newPassword"
+            value={inputs.newPassword}
             onChange={handleChange}
             variant="outlined"
             type="password"
-            error={!!errors.password}
-            helperText={errors.password}
+            error={!!errors.newPassword}
+            helperText={errors.newPassword}
             sx={{
-              marginBottom: 1,
+              marginBottom: 2,
               backgroundColor: "#f9f9f9",
               borderRadius: 1,
             }}
           />
-          <Box textAlign="right" mb={2}>
-            <Link
-              href="/password-reset"
-              underline="hover"
-              sx={{
-                color: "#0066cc",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              Forgot Password?
-            </Link>
-          </Box>
+          <TextField
+            fullWidth
+            label="Re-enter Password"
+            margin="normal"
+            name="reEnterPassword"
+            value={inputs.reEnterPassword}
+            onChange={handleChange}
+            variant="outlined"
+            type="password"
+            error={!!errors.reEnterPassword}
+            helperText={errors.reEnterPassword}
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "#f9f9f9",
+              borderRadius: 1,
+            }}
+          />
           <Button
             fullWidth
             variant="contained"
             color="primary"
             type="submit"
-            endIcon={<VpnKeyIcon />}
+            endIcon={<LockResetIcon />}
             sx={{
               marginTop: 2,
               paddingY: 1.5,
@@ -181,14 +194,14 @@ function Login() {
               },
             }}
           >
-            Login
+            Reset Password
           </Button>
         </form>
 
         <Button
           fullWidth
           color="secondary"
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/login")}
           sx={{
             marginTop: 1,
             textTransform: "none",
@@ -196,11 +209,11 @@ function Login() {
             fontWeight: "bold",
           }}
         >
-          Don't have an account? Register
+          Don't want reset? Login
         </Button>
       </Paper>
     </Box>
   );
 }
 
-export default Login;
+export default ResetPassword;

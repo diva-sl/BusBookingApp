@@ -12,12 +12,47 @@ function Register() {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
       navigate("/");
     }
   }, [navigate]);
+
+  const validateFields = () => {
+    let isValid = true;
+    const newErrors = {
+      name: "",
+      email: "",
+      password: "",
+    };
+
+    if (!inputs.name.trim()) {
+      newErrors.name = "Name is required";
+      isValid = false;
+    }
+
+    if (!inputs.email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputs.email)) {
+      newErrors.email = "Invalid email format";
+      isValid = false;
+    }
+
+    if (!inputs.password.trim()) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const request = async () => {
     try {
@@ -43,11 +78,17 @@ function Register() {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    request();
+    if (validateFields()) {
+      request();
+    }
   };
 
   return (
@@ -95,6 +136,8 @@ function Register() {
             value={inputs.name}
             onChange={handleChange}
             variant="outlined"
+            error={!!errors.name}
+            helperText={errors.name}
             sx={{
               marginBottom: 2,
               backgroundColor: "#f9f9f9",
@@ -110,6 +153,8 @@ function Register() {
             onChange={handleChange}
             variant="outlined"
             type="email"
+            error={!!errors.email}
+            helperText={errors.email}
             sx={{
               marginBottom: 2,
               backgroundColor: "#f9f9f9",
@@ -125,6 +170,8 @@ function Register() {
             onChange={handleChange}
             variant="outlined"
             type="password"
+            error={!!errors.password}
+            helperText={errors.password}
             sx={{
               marginBottom: 2,
               backgroundColor: "#f9f9f9",

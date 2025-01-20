@@ -119,14 +119,60 @@ router.post("/login", async (req, res, next) => {
         expiresIn: "1d",
       }
     );
+
     res.send({
       message: "User Logged In Successfully",
       success: true,
-      data: token,
+      token: token,
     });
   } catch (error) {
     res.send({
       message: error,
+      success: false,
+      data: null,
+    });
+  }
+});
+
+//Reset Password
+
+router.post("/reset-password", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).send({
+        message: "Email and password are required",
+        success: false,
+        data: null,
+      });
+    }
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+        success: false,
+        data: null,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hashSync(password);
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.send({
+      message:
+        "Password reset successfully. Please login with your new password.",
+      success: true,
+      data: null,
+    });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).send({
+      message: "An error occurred while resetting the password.",
       success: false,
       data: null,
     });
