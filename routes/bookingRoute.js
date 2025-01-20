@@ -132,4 +132,41 @@ router.post("/get-all-bookings", authMiddleware, async (req, res) => {
   }
 });
 
+// cancel-ticket
+
+router.post("/cancel-ticket", authMiddleware, async (req, res) => {
+  const { ticketId } = req.body;
+
+  if (!ticketId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Ticket ID required" });
+  }
+
+  try {
+    const booking = await Booking.findById(ticketId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Ticket not found" });
+    }
+
+    booking.status = "canceled";
+    await booking.save();
+
+    const bus = await Bus.findById(booking.bus);
+    if (bus) {
+      bus.seatsBooked = bus.seatsBooked.filter(
+        (seat) => !booking.seats.includes(seat)
+      );
+      await bus.save();
+    }
+
+    res.json({ success: true, message: "Ticket canceled successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 module.exports = router;
