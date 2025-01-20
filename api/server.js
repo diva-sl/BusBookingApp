@@ -28,7 +28,13 @@ app.use("/api/bookings", bookingRoute);
 //   });
 // }
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.use(
+  cors({
+    origin: "https://vought-bus.vercel.app", // Replace with your frontend URL
+    credentials: true,
+  })
+);
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
