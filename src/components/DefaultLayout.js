@@ -5,10 +5,12 @@ import {
   Home as HomeIcon,
   Book as BookIcon,
   AccountBox as AccountBoxIcon,
+  People as PeopleIcon,
   Logout as LogoutIcon,
   DirectionsBus as DirectionsBusIcon,
   Close as CloseIcon,
   Menu as MenuIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -39,8 +41,9 @@ function DefaultLayout({ children }) {
   const adminMenu = [
     { name: "Home", icon: <HomeIcon />, path: "/" },
     { name: "Buses", icon: <DirectionsBusIcon />, path: "/admin/buses" },
-    { name: "Users", icon: <AccountBoxIcon />, path: "/admin/users" },
+    { name: "Users", icon: <PeopleIcon />, path: "/admin/users" },
     { name: "Booking", icon: <BookIcon />, path: "/admin/bookings" },
+    { name: "Profile", icon: <AccountBoxIcon />, path: "/admin/profile" },
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
@@ -81,31 +84,51 @@ function DefaultLayout({ children }) {
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "left",
+              alignItems: "flex-start",
               justifyContent: "center",
               padding: "20px 10px",
-              gap: "15px",
-              whiteSpace: "nowrap",
+              gap: "10px",
+              background: "black",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.15)",
               color: "#fff",
+              width: menu ? "85%" : "80%",
+              margin: "0 auto",
+              mb: 3,
             }}
           >
             <Box
               sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
                 fontSize: "18px",
-                color: "black",
+                fontWeight: "bold",
+                color: "#ffcc33",
+                mb: 2,
               }}
             >
-              User : {user?.name || "Guest"}
+              <PersonIcon sx={{ fontSize: "30px", color: "#ffffff", ml: 2 }} />
+              {user?.name || "Guest"}
             </Box>
             <Box
               sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
                 fontSize: "16px",
-                color: "black",
+                fontWeight: "500",
+                ml: 2,
+                color: user?.isAdmin ? "#ffcc33" : "#33c9ff",
               }}
             >
-              Role : {user?.isAdmin ? "Admin" : "User"}
+              <span style={{ color: "#ffffff", fontWeight: "bold" }}>
+                Role :
+              </span>
+              {user?.isAdmin ? "Admin" : "User"}
             </Box>
           </Box>
+
           <Box
             sx={{
               display: "flex",

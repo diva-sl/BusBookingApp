@@ -50,8 +50,12 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: false,
-      minlength: 10,
-      maxlength: 15,
+      validate: {
+        validator: function (value) {
+          return !value || /^[0-9]{10,15}$/.test(value);
+        },
+        message: "Phone number must be between 10 and 15 digits.",
+      },
     },
     dob: {
       type: Date,
