@@ -14,13 +14,14 @@
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/api/users", "dest": "/api/users.js" },
+    { "src": "/api/buses", "dest": "/api/buses.js" },
+    { "src": "/api/bookings", "dest": "/api/booking.js" },
+    { "src": "/(.*)", "dest": "/build/$1" }
   ],
   "build": {
     "env": {
-      "NODE_VERSION": "22.11.0",
-      "CI": "false"
+      "NODE_VERSION": "22.11.0"
     }
   }
 }
