@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const userRoute = require("./routes/usersRoute.js");
-const busRoute = require("./routes/busesRoute.js");
-const bookingRoute = require("./routes/bookingRoute.js");
+const userRoute = require("./api/usersRoute.js");
+const busRoute = require("./api/busesRoute.js");
+const bookingRoute = require("./api/bookingRoute.js");
 const connectDB = require("./config/connect.js");
 
 const app = express();
@@ -19,6 +19,8 @@ app.use("/users", userRoute);
 app.use("/buses", busRoute);
 app.use("/api/bookings", bookingRoute);
 
+module.exports = app;
+
 // heroku enviroment
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static("client/build"));
@@ -28,7 +30,7 @@ app.use("/api/bookings", bookingRoute);
 //   });
 // }
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
