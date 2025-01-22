@@ -4,7 +4,7 @@ const cors = require("cors");
 const userRoute = require("./routes/usersRoute.js");
 const busRoute = require("./routes/busesRoute.js");
 const bookingRoute = require("./routes/bookingRoute.js");
-const connectDB = require("./config/connect.js");
+// const connectDB = require("./config/connect.js");
 
 const app = express();
 // Connect to the database
@@ -28,7 +28,8 @@ app.use("/api/bookings", bookingRoute);
 //   });
 // }
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+export default app;

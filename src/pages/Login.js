@@ -48,15 +48,10 @@ function Login() {
 
   const request = async () => {
     try {
-      console.log(process.env.REACT_APP_API_BASE_URL);
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/users/login`,
-        {
-          email: inputs.email,
-          password: inputs.password,
-        }
-      );
-
+      const res = await axios.post(`http://localhost:5000/users/login`, {
+        email: inputs.email,
+        password: inputs.password,
+      });
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         navigate("/");
@@ -65,7 +60,6 @@ function Login() {
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while logging in.");
     }
   };
 
