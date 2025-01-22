@@ -48,6 +48,7 @@ function Login() {
 
   const request = async () => {
     try {
+      console.log(process.env.REACT_APP_API_BASE_URL);
       const res = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/users/login`,
         {
