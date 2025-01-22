@@ -80,10 +80,13 @@ router.post("/register", async (req, res, next) => {
 // Login User
 
 router.post("/login", async (req, res, next) => {
+  console.log(res.body);
+
   const { email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
+    console.log(existingUser);
 
     if (!existingUser) {
       return res.send({
