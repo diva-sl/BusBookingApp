@@ -44,6 +44,22 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 
+const uploadImageToImgur = async (base64Image) => {
+  const response = await axios.post(
+    "https://api.imgur.com/3/image",
+    {
+      image: base64Image,
+    },
+    {
+      headers: {
+        Authorization: `5d4c4011ee461fd`, // Replace with your Client ID
+      },
+    }
+  );
+
+  return response.data.data.link; // Return the URL of the uploaded image
+};
+
 // Register User
 
 router.post("/register", async (req, res, next) => {
@@ -289,7 +305,6 @@ router.post("/update-user-permission", authMiddleware, async (req, res) => {
 });
 
 // Get Profile
-
 router.post("/get-profile", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
@@ -298,19 +313,8 @@ router.post("/get-profile", authMiddleware, async (req, res) => {
     const userProfile = {
       ...user.toObject(),
       dob: user.dob ? moment(user.dob).format("YYYY-MM-DD") : "",
-      profilePicture: "",
+      profilePicture: user.profilePicture || "", // Directly use Imgur URL
     };
-
-    if (user.profilePicture) {
-      const filePath = path.join(__dirname, "..", user.profilePicture);
-      if (fs.existsSync(filePath)) {
-        const fileBuffer = fs.readFileSync(filePath);
-        const mimeType = path.extname(filePath).slice(1);
-        userProfile.profilePicture = `data:image/${mimeType};base64,${fileBuffer.toString(
-          "base64"
-        )}`;
-      }
-    }
 
     res.status(200).json({ success: true, user: userProfile });
   } catch (error) {
@@ -318,6 +322,37 @@ router.post("/get-profile", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch user profile", error });
   }
 });
+
+// Get Profile
+
+// router.post("/get-profile", authMiddleware, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.body.userId);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const userProfile = {
+//       ...user.toObject(),
+//       dob: user.dob ? moment(user.dob).format("YYYY-MM-DD") : "",
+//       profilePicture: "",
+//     };
+
+//     if (user.profilePicture) {
+//       const filePath = path.join(__dirname, "..", user.profilePicture);
+//       if (fs.existsSync(filePath)) {
+//         const fileBuffer = fs.readFileSync(filePath);
+//         const mimeType = path.extname(filePath).slice(1);
+//         userProfile.profilePicture = `data:image/${mimeType};base64,${fileBuffer.toString(
+//           "base64"
+//         )}`;
+//       }
+//     }
+
+//     res.status(200).json({ success: true, user: userProfile });
+//   } catch (error) {
+//     console.error("Error fetching profile:", error);
+//     res.status(500).json({ message: "Failed to fetch user profile", error });
+//   }
+// });
 
 // Update Profile
 router.post(
@@ -348,45 +383,32 @@ router.post(
       };
 
       const user = await User.findById(userId);
-      if (!user) {
+      if (!user)
         return res
           .status(404)
           .json({ success: false, message: "User not found" });
-      }
 
       if (newPassword) {
-        if (!password) {
+        if (!password)
           return res
             .status(400)
             .json({ success: false, message: "Current password is required" });
-        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
+        if (!isMatch)
           return res
             .status(400)
             .json({ success: false, message: "Incorrect current password" });
-        }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
         updateData.password = hashedNewPassword;
       }
 
-      const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
-
       if (profilePicture) {
-        const newFilePath = saveBase64Image(profilePicture, uploadDir);
-        if (user.profilePicture) {
-          const oldFilePath = path.join(__dirname, "..", user.profilePicture);
-          deleteFile(oldFilePath);
-        }
-        updateData.profilePicture = newFilePath;
+        const imgurUrl = await uploadImageToImgur(profilePicture); // Upload to Imgur
+        updateData.profilePicture = imgurUrl; // Save Imgur URL
       } else if (removeProfilePicture === "true") {
-        if (user.profilePicture) {
-          const oldFilePath = path.join(__dirname, "..", user.profilePicture);
-          deleteFile(oldFilePath);
-        }
-        updateData.profilePicture = "";
+        updateData.profilePicture = ""; // Remove profile picture
       }
 
       const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
@@ -406,5 +428,93 @@ router.post(
     }
   }
 );
+
+// // Update Profile
+// router.post(
+//   "/update-profile",
+//   upload.none(),
+//   authMiddleware,
+//   async (req, res) => {
+//     try {
+//       const {
+//         name,
+//         email,
+//         phone,
+//         dob,
+//         address,
+//         profilePicture,
+//         removeProfilePicture,
+//         userId,
+//         password,
+//         newPassword,
+//       } = req.body;
+
+//       const updateData = {
+//         name,
+//         email,
+//         phone,
+//         dob,
+//         address: address ? JSON.parse(address) : undefined,
+//       };
+
+//       const user = await User.findById(userId);
+//       if (!user) {
+//         return res
+//           .status(404)
+//           .json({ success: false, message: "User not found" });
+//       }
+
+//       if (newPassword) {
+//         if (!password) {
+//           return res
+//             .status(400)
+//             .json({ success: false, message: "Current password is required" });
+//         }
+
+//         const isMatch = await bcrypt.compare(password, user.password);
+//         if (!isMatch) {
+//           return res
+//             .status(400)
+//             .json({ success: false, message: "Incorrect current password" });
+//         }
+
+//         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+//         updateData.password = hashedNewPassword;
+//       }
+
+//       const uploadDir = path.join(__dirname, "../uploads/profile-pictures");
+
+//       if (profilePicture) {
+//         const newFilePath = saveBase64Image(profilePicture, uploadDir);
+//         if (user.profilePicture) {
+//           const oldFilePath = path.join(__dirname, "..", user.profilePicture);
+//           deleteFile(oldFilePath);
+//         }
+//         updateData.profilePicture = newFilePath;
+//       } else if (removeProfilePicture === "true") {
+//         if (user.profilePicture) {
+//           const oldFilePath = path.join(__dirname, "..", user.profilePicture);
+//           deleteFile(oldFilePath);
+//         }
+//         updateData.profilePicture = "";
+//       }
+
+//       const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+//         new: true,
+//       });
+
+//       res.status(200).json({
+//         success: true,
+//         message: "Profile updated successfully",
+//         user: updatedUser,
+//       });
+//     } catch (error) {
+//       console.error("Error updating profile:", error);
+//       res
+//         .status(500)
+//         .json({ success: false, message: "Failed to update profile", error });
+//     }
+//   }
+// );
 
 module.exports = router;

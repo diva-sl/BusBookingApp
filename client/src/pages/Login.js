@@ -53,7 +53,6 @@ function Login() {
         email: inputs.email,
         password: inputs.password,
       });
-      console.log(res.data);
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         navigate("/");
