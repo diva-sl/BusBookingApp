@@ -30,7 +30,8 @@ function Bookings() {
   const getBookings = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/bookings/get-bookings-by-user-id",
+        `${process.env.REACT_APP_API_BASE_URL}/api/bookings/get-bookings-by-user-id`,
+        // "http://localhost:5000/api/bookings/get-bookings-by-user-id",
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

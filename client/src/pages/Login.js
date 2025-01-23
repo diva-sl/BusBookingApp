@@ -3,6 +3,7 @@ import { TextField, Typography, Button, Box, Paper, Link } from "@mui/material";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import config from "../config";
 import "./global.css";
 
 function Login() {
@@ -48,15 +49,10 @@ function Login() {
 
   const request = async () => {
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/users/login`,
-        // {
-        // `http://localhost:5000/users/login`,
-        {
-          email: inputs.email,
-          password: inputs.password,
-        }
-      );
+      const res = await axios.post(`${config.API_BASE_URL}/users/login`, {
+        email: inputs.email,
+        password: inputs.password,
+      });
       console.log(res.data);
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
