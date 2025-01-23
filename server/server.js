@@ -30,10 +30,6 @@ app.use("/users", userRoute);
 app.use("/buses", busRoute);
 app.use("/api/bookings", bookingRoute);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Vought Bus API");
-});
-
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
