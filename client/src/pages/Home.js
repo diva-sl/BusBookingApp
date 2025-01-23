@@ -30,7 +30,8 @@ function Home() {
     try {
       // dispatch(showLoading());
       const response = await axios.post(
-        "http://localhost:5000/buses/get-all-buses",
+        `${process.env.REACT_APP_API_BASE_URL}/buses/get-all-buses`,
+        // "http://localhost:5000/buses/get-all-buses",
         activeFilters,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
