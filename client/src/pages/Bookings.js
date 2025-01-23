@@ -21,6 +21,7 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb"; // Icon for can
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Icon for booked ticket
 import { Modal } from "antd";
 import axios from "axios";
+import config from "../config";
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
@@ -30,8 +31,7 @@ function Bookings() {
   const getBookings = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/api/bookings/get-bookings-by-user-id`,
-        // "http://localhost:5000/api/bookings/get-bookings-by-user-id",
+        `${config.API_BASE_URL}/api/bookings/get-bookings-by-user-id`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -50,7 +50,7 @@ function Bookings() {
   const handleCancelTicket = async (ticketId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/bookings/cancel-ticket",
+        `${config.API_BASE_URL}/api/bookings/cancel-ticket`,
         { ticketId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

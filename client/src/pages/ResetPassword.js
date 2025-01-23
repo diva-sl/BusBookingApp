@@ -4,6 +4,7 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./global.css";
+import config from "../config";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -54,13 +55,12 @@ function ResetPassword() {
   const request = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/users/reset-password`,
+        `${config.API_BASE_URL}/users/reset-password`,
         {
           email: inputs.email,
           password: inputs.newPassword,
         }
       );
-
       if (res.data.success) {
         alert("Password reset successful! Please login.");
         navigate("/login");

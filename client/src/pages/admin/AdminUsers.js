@@ -17,6 +17,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import PageTitle from "../../components/PageTitle";
 import axios from "axios";
+import config from "../../config";
 import { useDispatch } from "react-redux";
 
 function AdminUsers() {
@@ -26,7 +27,7 @@ function AdminUsers() {
   const updateUserPermission = async (user, action) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/update-user-permission",
+        `${config.API_BASE_URL}/users/update-user-permission`,
         { selectedUserId: user._id, action },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -54,7 +55,7 @@ function AdminUsers() {
   const getUsers = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/get-all-users",
+        `${config.API_BASE_URL}/users/get-all-users`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

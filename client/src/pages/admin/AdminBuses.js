@@ -23,6 +23,7 @@ import BusForm from "../../components/BusForm";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../../redux/AlertSlice";
+import config from "../../config";
 
 function AdminBuses() {
   const [showBusForm, setShowBusForm] = useState(false);
@@ -32,11 +33,12 @@ function AdminBuses() {
   const [busToDelete, setBusToDelete] = useState(null);
 
   const dispatch = useDispatch();
+
   const getBuses = async () => {
     try {
       // dispatch(showLoading());
       const response = await axios.post(
-        "http://localhost:5000/buses/get-all-buses",
+        `${config.API_BASE_URL}/buses/get-all-buses`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -58,12 +60,13 @@ function AdminBuses() {
     try {
       dispatch(showLoading());
       const response = await axios.post(
-        "http://localhost:5000/buses/delete-bus",
+        `${config.API_BASE_URL}/buses/delete-bus`,
         { _id: busToDelete },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
       dispatch(hideLoading());
       if (response.data.success) {
         setBuses(buses.filter((bus) => bus._id !== busToDelete));

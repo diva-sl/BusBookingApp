@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import config from "../../config";
 
 function AdminBookings() {
   const [bookings, setBookings] = useState([]);
@@ -19,7 +20,7 @@ function AdminBookings() {
   const fetchAllBookings = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/bookings/get-all-bookings",
+        `${config.API_BASE_URL}/api/bookings/get-all-bookings`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

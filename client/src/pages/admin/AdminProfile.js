@@ -9,6 +9,7 @@ import {
   Avatar,
   Link,
 } from "@mui/material";
+import config from "../../config";
 
 function AdminProfile() {
   const [profile, setProfile] = useState({
@@ -34,7 +35,7 @@ function AdminProfile() {
   const fetchProfile = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/get-profile",
+        `${config.API_BASE_URL}/users/get-profile`,
         {},
         {
           headers: {
@@ -89,7 +90,7 @@ function AdminProfile() {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/users/update-profile",
+        `${config.API_BASE_URL}/users/update-profile`,
         formData,
         {
           headers: {

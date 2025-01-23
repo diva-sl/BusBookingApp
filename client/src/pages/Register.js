@@ -4,6 +4,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./global.css";
+import config from "../config";
 
 function Register() {
   const navigate = useNavigate();
@@ -56,15 +57,11 @@ function Register() {
 
   const request = async () => {
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/users/register`,
-        {
-          // `http://localhost:5000/users/register`, {
-          name: inputs.name,
-          email: inputs.email,
-          password: inputs.password,
-        }
-      );
+      const res = await axios.post(`${config.API_BASE_URL}/users/register`, {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+      });
 
       if (res.data.success) {
         alert("Registration successful! Please login.");
@@ -73,7 +70,7 @@ function Register() {
         alert(res.data.message);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error during registration:", err);
     }
   };
 

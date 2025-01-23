@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import config from "../config";
 import {
   Box,
   Typography,
@@ -34,7 +35,7 @@ function UserProfile() {
   const fetchProfile = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/get-profile",
+        `${config.API_BASE_URL}/users/get-profile`,
         {},
         {
           headers: {
@@ -87,9 +88,8 @@ function UserProfile() {
       } else if (!profile.profilePicture) {
         formData.append("removeProfilePicture", true);
       }
-
       const response = await axios.post(
-        "http://localhost:5000/users/update-profile",
+        `${config.API_BASE_URL}/users/update-profile`,
         formData,
         {
           headers: {

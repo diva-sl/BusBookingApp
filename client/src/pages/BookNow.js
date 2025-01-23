@@ -6,6 +6,7 @@ import { Box, Button, Typography, Grid, Divider, Paper } from "@mui/material";
 import StripeCheckout from "react-stripe-checkout";
 import { showLoading, hideLoading } from "../redux/AlertSlice";
 import SeatSelection from "../components/SeatSelection";
+import config from "../config";
 
 function BookNow() {
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -18,7 +19,7 @@ function BookNow() {
     try {
       // dispatch(showLoading());
       const response = await axios.post(
-        `http://localhost:5000/buses/get-bus-by-id`,
+        `${config.API_BASE_URL}/buses/get-bus-by-id`,
         { _id: params.id },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -40,7 +41,7 @@ function BookNow() {
     try {
       dispatch(showLoading());
       const response = await axios.post(
-        `http://localhost:5000/api/bookings/book-seat`,
+        `${config.API_BASE_URL}/api/bookings/book-seat`,
         {
           bus: bus._id,
           seats: selectedSeats,
@@ -67,13 +68,12 @@ function BookNow() {
     try {
       dispatch(showLoading());
       const response = await axios.post(
-        `http://localhost:5000/api/bookings/make-payment`,
+        `${config.API_BASE_URL}/api/bookings/make-payment`,
         { token, amount: selectedSeats.length * bus.fare * 100 },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-
       dispatch(hideLoading());
       if (response.data.success) {
         bookNow(response.data.data.transactionId);
