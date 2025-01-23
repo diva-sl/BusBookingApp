@@ -28,7 +28,7 @@ app.use("/api/bookings", bookingRoute);
 app.use(
   cors({
     origin: "https://vought-bus.vercel.app", // Allow the front-end domain
-    methods: ["GET", "POST"],
+    methods: ["POST"],
     credentials: true, // Ensure credentials (cookies) are sent
   })
 );
