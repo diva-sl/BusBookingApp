@@ -50,16 +50,16 @@ const uploadImageToImgur = async (base64Image) => {
   const response = await axios.post(
     "https://api.imgur.com/3/image",
     {
-      image: base64Image.split(",")[1], // Extract Base64 string
+      image: base64Image.split(",")[1],
     },
     {
       headers: {
-        Authorization: `Client-ID 5d4c4011ee461fd`, // Use your Client ID here
+        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
       },
     }
   );
 
-  return response.data.data.link; // Return the URL of the uploaded image
+  return response.data.data.link;
 };
 
 // Register User
