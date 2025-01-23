@@ -170,7 +170,8 @@ function DefaultLayout({ children }) {
           </Box>
         </Box>
         <Box sx={{ padding: "10px", textAlign: "center", fontSize: "12px" }}>
-          © 2025 Vought Bus
+          © 2025 Vought Bus 
+            Developed By Divakaran
         </Box>
       </Box>
       <Box
