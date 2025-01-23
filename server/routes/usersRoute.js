@@ -8,6 +8,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const moment = require("moment");
+const axios = require("axios");
 
 // Helper function to save Base64 images
 const saveBase64Image = (base64String, uploadDir) => {
@@ -44,15 +45,16 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 
+// Function to upload image to Imgur
 const uploadImageToImgur = async (base64Image) => {
   const response = await axios.post(
     "https://api.imgur.com/3/image",
     {
-      image: base64Image,
+      image: base64Image.split(",")[1], // Extract Base64 string
     },
     {
       headers: {
-        Authorization: `5d4c4011ee461fd`, // Replace with your Client ID
+        Authorization: `Client-ID 5d4c4011ee461fd`, // Use your Client ID here
       },
     }
   );
@@ -404,9 +406,19 @@ router.post(
         updateData.password = hashedNewPassword;
       }
 
+      // Handle profile picture upload to Imgur
       if (profilePicture) {
-        const imgurUrl = await uploadImageToImgur(profilePicture); // Upload to Imgur
-        updateData.profilePicture = imgurUrl; // Save Imgur URL
+        try {
+          const imgurUrl = await uploadImageToImgur(profilePicture); // Upload to Imgur
+          updateData.profilePicture = imgurUrl; // Save Imgur URL
+        } catch (uploadError) {
+          console.error("Error uploading image to Imgur:", uploadError);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to upload profile picture",
+            error: uploadError.message,
+          });
+        }
       } else if (removeProfilePicture === "true") {
         updateData.profilePicture = ""; // Remove profile picture
       }
@@ -422,9 +434,11 @@ router.post(
       });
     } catch (error) {
       console.error("Error updating profile:", error);
-      res
-        .status(500)
-        .json({ success: false, message: "Failed to update profile", error });
+      res.status(500).json({
+        success: false,
+        message: "Failed to update profile",
+        error: error.message,
+      });
     }
   }
 );
