@@ -29,8 +29,10 @@ function BusForm({
       dispatch(showLoading());
       const url =
         type === "add"
-          ? "http://localhost:5000/buses/add-bus"
-          : "http://localhost:5000/buses/update-bus";
+          ? `${process.env.REACT_APP_API_BASE_URL}/buses/add-bus`
+          : `${process.env.REACT_APP_API_BASE_URL}/buses/update-bus`;
+      // ? "http://localhost:5000/buses/add-bus"
+      // : "http://localhost:5000/buses/update-bus";
       const payload =
         type === "add" ? values : { ...values, _id: selectedBus._id };
 

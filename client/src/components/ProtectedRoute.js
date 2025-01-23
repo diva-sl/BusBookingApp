@@ -17,7 +17,9 @@ function ProtectedRoute({ children }) {
     dispatch(showLoading());
     try {
       const res = await axios.post(
-        "http://localhost:5000/users/getuser",
+        `${process.env.REACT_APP_API_BASE_URL}/users/getuser`,
+
+        // "http://localhost:5000/users/getuser",
         {},
         {
           headers: {
