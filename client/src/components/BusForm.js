@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../redux/AlertSlice";
 import axios from "axios";
+import config from "../config";
 
 function BusForm({
   showBusForm,
@@ -29,10 +30,8 @@ function BusForm({
       dispatch(showLoading());
       const url =
         type === "add"
-          ? `${process.env.REACT_APP_API_BASE_URL}/buses/add-bus`
-          : `${process.env.REACT_APP_API_BASE_URL}/buses/update-bus`;
-      // ? "http://localhost:5000/buses/add-bus"
-      // : "http://localhost:5000/buses/update-bus";
+          ? `${config.API_BASE_URL}/buses/add-bus`
+          : `${config.API_BASE_URL}/buses/update-bus`;
       const payload =
         type === "add" ? values : { ...values, _id: selectedBus._id };
 
