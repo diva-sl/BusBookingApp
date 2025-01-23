@@ -35,7 +35,7 @@ function AdminBookings() {
       console.error(error);
     }
   };
-
+  console.log(bookings);
   useEffect(() => {
     fetchAllBookings();
   }, []);
