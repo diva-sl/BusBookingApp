@@ -17,7 +17,7 @@ mongoose
 // Middleware
 app.use(
   cors({
-    origin: "https://vought-bus.vercel.app", // Allow front-end domain
+    origin: "https://vought-bus.vercel.app/", // Allow front-end domain
     methods: ["GET", "POST", "PUT", "DELETE"], // Add other methods if necessary
     credentials: true, // Ensure credentials (cookies) are sent
   })
