@@ -12,6 +12,7 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
+import config from "../config";
 
 function Home() {
   const user = useSelector((state) => state.users.user);
@@ -30,8 +31,7 @@ function Home() {
     try {
       // dispatch(showLoading());
       const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/buses/get-all-buses`,
-        // "http://localhost:5000/buses/get-all-buses",
+        `${config.API_BASE_URL}/buses/get-all-buses`,
         activeFilters,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
