@@ -6,6 +6,7 @@ import { setUser } from "../redux/userSlice";
 import Loader from "./Loader";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import DefaultLayout from "./DefaultLayout";
+import config from "../config";
 
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
@@ -17,9 +18,7 @@ function ProtectedRoute({ children }) {
     dispatch(showLoading());
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/users/getuser`,
-
-        // "http://localhost:5000/users/getuser",
+        `${config.API_BASE_URL}/users/getuser`,
         {},
         {
           headers: {
