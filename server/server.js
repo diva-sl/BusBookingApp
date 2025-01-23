@@ -11,11 +11,17 @@ const app = express();
 // MongoDB Connection
 mongoose
   .connect(process.env.mongo_url)
-  .then(() => console.log("Mongo DB connection successful"))
-  .catch((err) => console.log("Mongo DB connection failed:", err));
+  .then(() => console.log("MongoDB connection successful"))
+  .catch((err) => console.log("MongoDB connection failed:", err));
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://vought-bus.vercel.app", // Allow front-end domain
+    methods: ["GET", "POST", "PUT", "DELETE"], // Add other methods if necessary
+    credentials: true, // Ensure credentials (cookies) are sent
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -23,15 +29,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/users", userRoute);
 app.use("/buses", busRoute);
 app.use("/api/bookings", bookingRoute);
-
-// CORS Configuration (for Vercel environment)
-app.use(
-  cors({
-    origin: "https://vought-bus.vercel.app", // Allow the front-end domain
-    methods: ["POST"],
-    credentials: true, // Ensure credentials (cookies) are sent
-  })
-);
 
 // Start server
 const PORT = process.env.PORT || 5000;
