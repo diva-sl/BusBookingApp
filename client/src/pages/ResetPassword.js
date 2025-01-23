@@ -209,7 +209,7 @@ function ResetPassword() {
             fontWeight: "bold",
           }}
         >
-          Don't want reset? Login
+          Don't Reset
         </Button>
       </Paper>
     </Box>
